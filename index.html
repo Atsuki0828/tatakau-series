@@ -139,6 +139,21 @@ body.weakflash{animation:wf .45s}
 .ln.new{animation:pop .25s ease-out}
 @keyframes pop{from{opacity:0;transform:translateY(8px)}}
 .tbar{position:sticky;bottom:8px;z-index:5;background:var(--bg);padding-top:4px}
+#nxb{position:fixed;left:0;right:0;bottom:0;z-index:30;display:none;pointer-events:none}
+#nxb.on{display:block}
+#nxb .in{max-width:500px;margin:0 auto;padding:22px 12px calc(10px + env(safe-area-inset-bottom));background:linear-gradient(to bottom,rgba(13,13,36,0),var(--bg) 45%);pointer-events:auto}
+#nxb .cmd{margin:0;height:54px;padding:0 10px 0 26px;display:flex;align-items:center;justify-content:center;white-space:nowrap;text-align:center}
+#nxb .grid2{grid-template-columns:.75fr 1.25fr}
+#nxb .cmd .small{margin-left:.4em}
+.nxsp{height:92px}
+#app:has(.rd){min-height:0;padding-bottom:0}
+.rd{display:flex;flex-direction:column;height:calc(100vh - 112px);height:calc(100dvh - 112px);min-height:260px}
+.rd>*{flex:none}
+.rd .stagei{font-size:2.2rem;margin-top:2px}
+.rd .fig svg{max-height:30vh;max-height:30dvh}
+.rd .lg{flex:1 1 auto;min-height:0;overflow-y:auto;align-content:start;padding:3px 6px 3px 3px;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:var(--c) transparent;-webkit-overflow-scrolling:touch}
+.rd .lg::-webkit-scrollbar{width:6px}.rd .lg::-webkit-scrollbar-thumb{background:var(--c);border-radius:3px}
+.rd .ln.old{opacity:.62}
 .stagei{text-align:center;font-size:3rem;line-height:1.1;margin-top:6px}
 .cart{padding:14px 14px 14px 32px}
 .cart .cic{float:right;font-size:2.4rem;line-height:1}
@@ -149,6 +164,7 @@ a.vid{text-decoration:none;color:#fff;display:block}
 </head>
 <body>
 <div id="app"></div>
+<div id="nxb" aria-live="polite"></div>
 <script>
 /* ============ データ（講義資料「腎機能／水と電解質のバランスの調節」より） ============ */
 /* ============ たたかう腎生理学：導入会話 ============ */
@@ -807,11 +823,11 @@ function pick(k){loadGame(k);home()}
 function who(k){const S=ST[TK.s];if(k==="boss")return{e:S.bi||MONS[TK.s][3][0],n:S.boss||MONS[TK.s][3][1],c:"#FF5A5F"};return GM.CAST[k]||{e:"❔",n:k,c:"#fff"}}
 function talk(s){s=+s;const S=ST[s];if(GM.STORY&&GM.STORY[s])return story(s,0,()=>town(s));if(!S||!S.talk||!S.talk.length)return town(s);G=null;TK={s,i:0};talkShow()}
 function talkShow(){const S=ST[TK.s],T=S.talk,n=TK.i,last=n+1>=T.length;
- show(`<div class="row">${back}<h2 class="y">${TK.s+1} ${S.n}</h2></div>${S.sub?`<p class="dim small">${S.sub}</p>`:""}
+ show(`<div class="rd"><div class="row">${back}<h2 class="y">${TK.s+1} ${S.n}</h2></div>${S.sub?`<p class="dim small">${S.sub}</p>`:""}
  <div class="stagei">${S.ic||"🏰"}</div>
- <div class="talk mt">${T.slice(0,n+1).map((l,j)=>{const c=who(l[0]);return `<div class="ln${j===n?" new":""}${l[0]==="boss"?" bs":""}"><span class="face">${c.e}</span><div><span class="nm" style="color:${c.c}">${esc(c.n)}</span><p>${chem(l[1])}</p></div></div>`}).join("")}</div>
- <div class="grid2 mt tbar"><button class="cmd" data-act="tskip">とばす</button><button class="cmd pri" data-act="tnext" id="tn">${last?"まとめを 見る":`つぎへ <span class="small dim">${n+1}/${T.length}</span>`}</button></div>`);
- const nw=document.querySelector(".ln.new");if(nw&&n>0)nw.scrollIntoView({block:"center"});const tn=document.getElementById("tn");if(tn)tn.focus({preventScroll:true})}
+ <div class="talk lg mt" id="lg" tabindex="0" aria-label="会話ログ">${T.slice(0,n+1).map((l,j)=>{const c=who(l[0]);return `<div class="ln${j===n?" new":" old"}${l[0]==="boss"?" bs":""}"><span class="face">${c.e}</span><div><span class="nm" style="color:${c.c}">${esc(c.n)}</span><p>${chem(l[1])}</p></div></div>`}).join("")}</div></div>`);
+ setBar(`<div class="grid2"><button class="cmd" data-act="tskip">とばす</button><button class="cmd pri" data-act="tnext" id="tn">${last?"まとめを 見る":`つぎへ <span class="small dim">${n+1}/${T.length}</span>`}</button></div>`);
+ lgBottom();const tn=document.getElementById("tn");if(tn)tn.focus({preventScroll:true})}
 function talkNext(){if(!TK)return;TK.i++;if(TK.i>=ST[TK.s].talk.length)return talkSkip();talkShow()}
 function talkSkip(){if(!TK)return;const s=TK.s;st.talked[s]=1;save();TK=null;town(s)}
 
@@ -892,7 +908,11 @@ function beep(f,d,type,when){if(st&&!st.sound)return;try{ac=ac||new (window.Audi
 const sHit=c=>{beep(c?880:440,.08);beep(c?1320:660,.12,"square",.07)},sNg=()=>{beep(140,.3,"sawtooth")},sWin=()=>[523,523,523,659,784,1047].forEach((f,i)=>beep(f,.16,"square",i*.12)),sLv=()=>[659,784,988,1319].forEach((f,i)=>beep(f,.14,"square",.3+i*.09)),sEnc=()=>[200,260,200,260].forEach((f,i)=>beep(f,.07,"square",i*.07));
 
 const drop=`<svg viewBox="0 0 100 110" aria-hidden="true"><path d="M50 6C50 6 14 46 14 70a36 36 0 0 0 72 0C86 46 50 6 50 6z" fill="#FFD84A" stroke="#fff" stroke-width="5"/><rect x="33" y="46" width="9" height="12" fill="#000"/><rect x="58" y="46" width="9" height="12" fill="#000"/><rect x="40" y="68" width="20" height="6" fill="#000"/></svg>`;
-function show(h){app.innerHTML=h;window.scrollTo(0,0)}
+const nxb=document.getElementById("nxb");
+function setBar(h){nxb.innerHTML=h?`<div class="in">${h}</div>`:"";nxb.className=h?"on":""}
+function lgBottom(){const l=document.getElementById("lg");if(l)l.scrollTop=l.scrollHeight}
+function nxView(){const sp=document.querySelector("#log .nxsp");if(sp)sp.scrollIntoView({block:"end",behavior:"smooth"})}
+function show(h){setBar("");app.innerHTML=h;window.scrollTo(0,0)}
 const hpCls=(h,m)=>h/m<=.25?"low":h/m<=.5?"mid":"";
 
 /* ============ シリーズ共通：まなび石・ガチャ・そうび ============ */
@@ -1148,11 +1168,11 @@ let SV=null;
 const stKey=(s,a)=>s+"-"+a;
 function story(s,a,after){SV={s:+s,a:+a,i:0,after:after||(()=>home())};storyShow()}
 function storyShow(){const A=GM.STORY[SV.s][SV.a],n=SV.i,L=A.l,last=n+1>=L.length,ln=L[n];TK={s:SV.s};
- show(`<div class="row"><button class="herb" data-act="sskip">とばす</button><span class="sp small dim center">📜 ${SV.s+1} ${chem(ST[SV.s].n)}　第${SV.a+1}幕</span></div>
+ show(`<div class="rd"><div class="row"><span class="sp small dim center">📜 ${SV.s+1} ${chem(ST[SV.s].n)}　第${SV.a+1}幕</span></div>
  <p class="y center mt">${chem(A.t)}</p>${figHtml(A.f,(ln[2]||"").split(" ").filter(Boolean))}
- <div class="talk mt">${L.slice(Math.max(0,n-1),n+1).map((l,j,arr)=>{const c=who(l[0]);return `<div class="ln${j===arr.length-1?" new":" old"}${l[0]==="boss"?" bs":""}"><span class="face">${c.e}</span><div><span class="nm" style="color:${c.c}">${esc(c.n)}</span><p>${chem(l[1])}</p></div></div>`}).join("")}</div>
- <button class="cmd pri mt" data-act="snext" id="sn">${last?(A.q&&A.q.length?"理解チェックへ":"おわる"):`つぎへ <span class="small dim">${n+1}/${L.length}</span>`}</button>`);
- const sn=document.getElementById("sn");if(sn)sn.focus({preventScroll:true})}
+ <div class="talk lg mt" id="lg" tabindex="0" aria-label="会話ログ">${L.slice(0,n+1).map((l,j)=>{const c=who(l[0]);return `<div class="ln${j===n?" new":" old"}${l[0]==="boss"?" bs":""}"><span class="face">${c.e}</span><div><span class="nm" style="color:${c.c}">${esc(c.n)}</span><p>${chem(l[1])}</p></div></div>`}).join("")}</div></div>`);
+ setBar(`<div class="grid2"><button class="cmd" data-act="sskip">とばす</button><button class="cmd pri" data-act="snext" id="sn">${last?(A.q&&A.q.length?"理解チェックへ":"おわる"):`つぎへ <span class="small dim">${n+1}/${L.length}</span>`}</button></div>`);
+ lgBottom();const sn=document.getElementById("sn");if(sn)sn.focus({preventScroll:true})}
 function storyNext(){if(!SV)return;SV.i++;const A=GM.STORY[SV.s][SV.a];if(SV.i<A.l.length)return storyShow();storyDone(false)}
 function storySkip(){if(!SV)return;storyDone(true)}
 function storyDone(skipped){const k=stKey(SV.s,SV.a),A=GM.STORY[SV.s][SV.a];if(!skipped||st.story[k]===undefined)st.story[k]=st.story[k]||(skipped?0:1);if(SV.a===0)st.talked[SV.s]=1;save();
@@ -1163,8 +1183,9 @@ function sqShow(){const Q=SV.qs[SV.qi];
  <div class="win q mt"><p>${chem(Q.q)}</p></div><div class="ch">${Q.ch.map((c,i)=>`<button class="cmd" data-act="sqa" data-v="${i}">${chem(c)}</button>`).join("")}</div><div id="log"></div>`)}
 function sqAns(v,btn){if(!SV||SV.lock)return;SV.lock=true;v=+v;const Q=SV.qs[SV.qi],ok=v===Q.a;if(ok){SV.ok++;sHit(0)}else{sNg();SV.wrong.push(Q)}
  document.querySelectorAll("[data-act=sqa]").forEach(b=>{b.disabled=true;const i=+b.dataset.v;b.classList.add(i===Q.a?"good":b===btn?"bad":"off")});
- document.getElementById("log").innerHTML=`<div class="win log" role="status"><p class="${ok?"y":"ng"}">${ok?"⭕ せいかい！":"❌ ざんねん"}</p><div class="ex">📖 ${ok?"":"えらんだ答え："+chem(Q.ex[v])+"<br>"}正解：${chem(Q.ex[Q.a])}</div><button class="cmd pri" data-act="sqn" id="nx">つぎへ</button></div>`;
- document.getElementById("nx").focus({preventScroll:true})}
+ document.getElementById("log").innerHTML=`<div class="win log" role="status"><p class="${ok?"y":"ng"}">${ok?"⭕ せいかい！":"❌ ざんねん"}</p><div class="ex">📖 ${ok?"":"えらんだ答え："+chem(Q.ex[v])+"<br>"}正解：${chem(Q.ex[Q.a])}</div></div><div class="nxsp"></div>`;
+ setBar(`<button class="cmd pri" data-act="sqn" id="nx">つぎへ</button>`);
+ document.getElementById("nx").focus({preventScroll:true});nxView()}
 function sqNext(){if(!SV)return;SV.lock=false;SV.qi++;if(SV.qi<SV.qs.length)return sqShow();
  const k=stKey(SV.s,SV.a),all=SV.ok===SV.qs.length;let got=0;if(all&&!st.storyQ[k]){st.storyQ[k]=1;got=addStones(100);save()}
  if(all)sWin();
@@ -1294,8 +1315,9 @@ function monTurn(L,extra,skip){const g=G,m=g.mon;if(m.hp<=0)return L;
   m.intent=pickIntent(m);const nt=intentTxt(m);L+=`<p class="dim">つぎの行動：${nt[0]} ${nt[1]}</p>`}
  else L+=`<p class="${m.cd<=1?"ng":"dim"}">${m.name}の ${intentTxt(m)[1]}まで あと ${m.cd}</p>`;
  updHud();return L}
-function showLog(L,ex){save();saveBattle();G.fb=true;document.getElementById("log").innerHTML=`<div class="win log" role="status">${L}${ex?`<div class="ex">📖 ${ex}</div>`:""}<button class="cmd pri" data-act="next" id="nx">つぎへ</button></div>`;
- const nx=document.getElementById("nx");nx.focus({preventScroll:true});nx.scrollIntoView({block:"nearest",behavior:"smooth"})}
+function showLog(L,ex){save();saveBattle();G.fb=true;document.getElementById("log").innerHTML=`<div class="win log" role="status">${L}${ex?`<div class="ex">📖 ${ex}</div>`:""}</div><div class="nxsp"></div>`;
+ setBar(`<button class="cmd pri" data-act="next" id="nx">つぎへ</button>`);
+ const nx=document.getElementById("nx");nx.focus({preventScroll:true});nxView()}
 function answer(v,btn){const g=G;if(!g||g.lock||!g.q)return;g.lock=true;v=+v;const q=g.q,m=g.mon,right=v===q.a,fast=(Date.now()-g.t0)/1000<g.qtime,sk=g.qt==="skill";
  const gi=document.getElementById("gi");gi.style.transition="none";gi.style.width=getComputedStyle(gi).width;
  document.querySelectorAll("[data-act=ans]").forEach(b=>{b.disabled=true;const i=+b.dataset.v;b.classList.add(i===q.a?"good":b===btn?"bad":"off")});
@@ -1352,7 +1374,7 @@ const A={resume,home,town,talk,tnext:talkNext,tskip:talkSkip,title,pick,zukan,bo
  snext:storyNext,sskip:storySkip,sqa:sqAns,sqn:sqNext,sdone:sqDone,sre:sqRe,stories:storyList,
  sread(v){const [s,a]=v.split("-").map(Number);story(s,a,()=>storyList())},
  retry(){R.retry&&R.retry()},quit(){const s=G&&G.mode==="dungeon"?G.s:null;G=null;clearBattle();s!=null?town(s):home()},sound(){st.sound=!st.sound;save();home();if(st.sound)sHit(1)}};
-document.addEventListener("click",e=>{const b=e.target.closest("[data-act]");if(!b||b.disabled)return;const f=A[b.dataset.act];if(f)f(b.dataset.v,b)});
+document.addEventListener("click",e=>{const b=e.target.closest("[data-act]");if(!b||b.disabled)return;const f=A[b.dataset.act];if(f){if(b.closest("#nxb"))setBar("");f(b.dataset.v,b)}});
 document.addEventListener("keydown",e=>{if(!G||G.lock||!G.q||e.metaKey||e.ctrlKey||!/^[1-5]$/.test(e.key))return;const b=document.querySelector(`[data-act=ans][data-v="${+e.key-1}"]`);if(b){e.preventDefault();answer(+e.key-1,b)}});
 title();
 </script>
