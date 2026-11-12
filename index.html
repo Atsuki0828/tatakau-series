@@ -822,7 +822,7 @@ function title(){G=null;TK=null;document.title="たたかうシリーズ";
  <div class="grid2 mt"><button class="cmd pri" data-act="gacha">🎰 ガチャ<br><span class="small">💎 ${meta.stones}</span></button><button class="cmd" data-act="gear">🛡 そうび<br><span class="small dim">${Object.keys(meta.gear).length}/${GEAR.length}</span></button></div><p class="small dim mt center">まなび石・そうびは 2つの ソフトで きょうつう</p><div class="win mt small"><p class="y">あそびかた</p><ul class="pts"><li>ダンジョンを えらぶと、まず キャラクターたちの 会話が はじまる。読むだけで だいたいの 内容が つかめるように なっている</li><li>会話のあとの「まとめ」で ポイントを確認してから、ダンジョンへ</li><li>まものの 🔍 を読み、病態に合う じゅもん（くすり）を えらぶと 大ダメージ＋もう一度 うごける。禁忌の くすりは ぎゃくこうか！</li><li>クリアや 理解チェックで まなび石が たまる。ガチャで そうびを 集めよう</li><li>まちがえた問題は「ふくしゅう洞窟」に たまる</li></ul></div>`)}
 function pick(k){loadGame(k);home()}
 function who(k){const S=ST[TK.s];if(k==="boss")return{e:S.bi||MONS[TK.s][3][0],n:S.boss||MONS[TK.s][3][1],c:"#FF5A5F"};return GM.CAST[k]||{e:"❔",n:k,c:"#fff"}}
-function talk(s){s=+s;const S=ST[s];if(GM.STORY&&GM.STORY[s])return story(s,0,()=>town(s));if(!S||!S.talk||!S.talk.length)return town(s);G=null;TK={s,i:0};talkShow()}
+function talk(s){s=+s;const S=ST[s];if(GM.STORY&&GM.STORY[s])return town(s);if(!S||!S.talk||!S.talk.length)return town(s);G=null;TK={s,i:0};talkShow()}
 function talkShow(){const S=ST[TK.s],T=S.talk,n=TK.i,last=n+1>=T.length;
  show(`<div class="rd"><div class="row">${back}<h2 class="y">${TK.s+1} ${S.n}</h2></div>${S.sub?`<p class="dim small">${S.sub}</p>`:""}
  <div class="stagei">${S.ic||"🏰"}</div>
@@ -830,7 +830,7 @@ function talkShow(){const S=ST[TK.s],T=S.talk,n=TK.i,last=n+1>=T.length;
  setBar(`<div class="grid2"><button class="cmd" data-act="tskip">とばす</button><button class="cmd pri" data-act="tnext" id="tn">${last?"まとめを 見る":`つぎへ <span class="small dim">${n+1}/${T.length}</span>`}</button></div>`);
  lgBottom();const tn=document.getElementById("tn");if(tn)tn.focus({preventScroll:true})}
 function talkNext(){if(!TK)return;TK.i++;if(TK.i>=ST[TK.s].talk.length)return talkSkip();talkShow()}
-function talkSkip(){if(!TK)return;const s=TK.s;st.talked[s]=1;save();TK=null;town(s)}
+function talkSkip(){if(!TK)return;const s=TK.s,f=TK.after;st.talked[s]=1;save();TK=null;f?f():town(s)}
 
 /* ============ 参考動画（ダンジョン入口に表示） ============ */
 const YT=id=>"https://youtu.be/"+id;
@@ -893,6 +893,8 @@ const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random(
 const rnd=(a,b)=>a+Math.random()*(b-a);
 
 function qOf(k){const id=k.slice(2);
+ if(k[0]==="y"){const [s,a,j]=id.split("-").map(Number),A=GM.STORY&&GM.STORY[s]&&GM.STORY[s][a],x=A&&A.q&&A.q[j];if(!x)return null;const ord=shuffle(x.o.map((_,i)=>i)),an=ord.indexOf(x.a);
+  return{k,s,kind:"mc",tag:"ものがたりの問題",q:x.q,ch:ord.map(i=>x.o[i][0]),a:an,ex:v=>(v!==an?"えらんだ答え："+x.o[ord[v]][1]+"\n":"")+"正解："+x.o[x.a][1],time:28}}
  if(k[0]==="w"){const [s,i]=id.split("-").map(Number),m=mon(s,i);if(!m||!m.weak)return null;const b=bestOf(m);
   const loc=LEARN[s]||[],bad=shuffle(SPO.filter(x=>m.weak[x]&&m.weak[x][0]<=0)).concat(shuffle(loc.filter(x=>!m.weak[x])),shuffle(SPO.filter(x=>!m.weak[x]&&!loc.includes(x))));const ch=shuffle([b].concat(bad.slice(0,3))),a=ch.indexOf(b);
   return{k,s,kind:"mc",tag:"じゅもんを えらべ",q:`${m.name}：${m.desc}　いちばん きく じゅもんは？`,ch:ch.map(x=>SP[x].n),a,ex:v=>(v!==a?"えらんだ答え："+(m.weak[ch[v]]?m.weak[ch[v]][1]:SP[ch[v]].n+"は、この相手には あまり きかない（"+SP[ch[v]].d+"）")+"\n":"")+"正解："+m.weak[b][1],time:22}}
@@ -1106,7 +1108,7 @@ const JIN_STORY={
   {q:"細い下行脚の はたらきは どれか。",a:0,o:[["水が出ていき、中身が濃縮される","下行脚は水だけを再吸収する"],["NaClが出ていき、中身が希釈される","それは上行脚"],["グルコースを ほぼ全部 取り戻す","それは近位尿細管"]]},
   {q:"結合尿細管の 説明として 正しいものは どれか。",a:1,o:[["1本のネフロンを、そのまま尿管につなぐ","尿管ではなく集合管へ。しかも1本ではない"],["いくつものネフロンを 束ねて 皮質集合管へ つなぐ","複数のネフロンを“結合”する"],["ボウマン嚢と近位尿細管を つなぐ","そこは腎小体のすぐ出口"]]}]},
  {t:"血液から尿へ：数字でつかむ",f:"neph",l:[
-  ["s","迷子のネフロン、ちゃんと帰れたね！",""],
+  ["s","迷子のネフロンは もうすぐそこ。でも、量の感覚が まだつかめないよ",""],
   ["n","最後に、数字で全体をつかんでおこう。腎臓に来る血液（RBF）は約1000〜1200 mL/min","aff"],
   ["n","そのうち血漿だけがろ過に使える。血漿は血液の約55%。だから RPF＝RBF×（1−ヘマトクリット）","aff"],
   ["m","RBF 1000でヘマトクリット45%なら、RPFは550 mL/minだね！",""],
@@ -1115,8 +1117,7 @@ const JIN_STORY={
   ["n","Na+と水の排泄が増える。圧ナトリウム利尿だ。順番に追うと…","eff"],
   ["n","血圧↑→尿細管のまわりの毛細血管の圧↑→毛細血管への水の吸収↓→下行脚での水の再吸収↓","eff desc"],
   ["n","→下行脚で中身があまり濃くならない→細い上行脚でNa+の再吸収↓→Na+と水がそのまま尿へ","thin out"],
-  ["m","血圧が上がる→おしっこが増える→血液の量が減る→血圧が戻る。うまくできてる！",""],
-  ["n","次の部屋では「GFRをどうやって測るのか」を学ぶよ。クリアランスの部屋だ",""]],
+  ["m","血圧が上がる→おしっこが増える→血液の量が減る→血圧が戻る。うまくできてる！",""]],
  q:[{q:"腎血流量（RBF）1000 mL/min、ヘマトクリット45%のとき、腎血漿流量（RPF）は。",a:1,o:[["450 mL/min","それは血球の分"],["550 mL/min","RPF＝1000×（1−0.45）"],["200 mL/min","それは濾過率0.2と混同している"]]},
   {q:"血圧が上がったときの変化として 正しいものは どれか。",a:2,o:[["細い上行脚でのNa+再吸収が増える","減る。だからNa+が尿に出ていく"],["下行脚での水の再吸収が増える","尿細管周囲の毛細血管圧が上がり、水の再吸収は減る"],["Na+と水の尿への排泄が増える","圧ナトリウム利尿（圧利尿）"]]}]}],
 1:[
@@ -1144,12 +1145,12 @@ const JIN_STORY={
   ["n","体の中で一定に作られて、ほぼGFRの目安になる。でも近位尿細管で少しだけ分泌されるから、GFRより少し大きく出る","secr"],
   ["n","それから注意。NH4+やH+のように腎臓の中で作られる物質には、クリアランスの考え方は使えない",""],
   ["m","RPFがわかれば、ヘマトクリットから腎血流量も出せるよ。RBF＝RPF×100÷（100−Ht）！","blood"],
-  ["boss","…なかなか分かっておるな。では、わしと勝負じゃ！",""]],
+  ["boss","…なかなか分かっておるな。奥で待っておるぞ",""]],
  q:[{q:"ある物質のクリアランスが GFRより小さい。考えられることは どれか。",a:1,o:[["尿細管で 分泌が 再吸収より多い","それならGFRより大きくなる"],["尿細管で 再吸収が 分泌より多い","ろ過された分の一部が取り戻されている"],["再吸収も分泌も されない","それならGFRと等しい"]]},
   {q:"クレアチニンのクリアランスが GFRより やや大きい理由は どれか。",a:0,o:[["近位尿細管で 少し分泌されるから","ろ過＋少量の分泌"],["一部が 再吸収されるから","再吸収ならGFRより小さくなる"],["腎臓で 作られるから","クレアチニンは主に筋肉で作られる。腎臓で作られる物質にはクリアランスは使えない"]]},
   {q:"クリアランスの考え方が 使えないものは どれか。",a:2,o:[["イヌリン","GFRの測定に使う"],["PAH","RPFの測定に使う"],["NH4+","腎臓の中で作られるので使えない"]]}]},
  {t:"細胞の中の 運び屋たち",f:"cell",l:[
-  ["s","イヌリン仙人に勝った！　でも、再吸収って、細胞はどうやって物を運んでるの？",""],
+  ["s","仙人のところへ行く前に…再吸収って、細胞はどうやって物を運んでるの？",""],
   ["n","尿細管の細胞には向きがある。原尿側の管腔側膜と、血液側の側底膜。それぞれに別の運び屋がいるんだ","lumen blood"],
   ["n","まず側底膜のNa+-K+-ATPase。ATPを使って、3つのNa+を外へ、2つのK+を中へ運ぶ。これが一次性能動輸送","pump"],
   ["m","だから細胞の中は、いつもNa+が少ない状態！","pump lowna"],
@@ -1303,19 +1304,18 @@ Object.assign(JIN_STORY,{
   ["n","すき間からタンパクがもれる。タンパク尿が出る、ネフローゼ症候群だ","slit alb"],
   ["n","最後に、ろ過を進める力。押し出すのは毛細血管圧。引き戻すのはボウマン腔の圧と、血漿の膠質浸透圧","pc pi"],
   ["n","押す力から引く力を引いたのが、正味のろ過圧。それにろ過係数Kfをかけたものが GFR＝Kf×正味のろ過圧 だ","pc pi"],
-  ["boss","ぐぬぬ…3層すべてを見破るとは…！",""]],
+  ["boss","ぐぬぬ…3層を見破ったか…だが、奥の門は まだ通さぬ！",""]],
  q:[{q:"足突起どうしの ろ過スリットを つくるタンパク質は どれか。",a:1,o:[["アルブミン","アルブミンはろ過を止められる側"],["nephrin","スリット膜を形成。障害されるとネフローゼ症候群"],["アクアポリン1","下行脚や近位尿細管の水チャネル"]]},
   {q:"アルブミンが 糸球体で ろ過されにくい理由として 正しいものは どれか。",a:0,o:[["基底膜や足細胞が 負電荷に富み、負電荷のアルブミンが 反発するから","charge barrier。サイズのバリアでも止まる"],["アルブミンが 正の電荷を もつから","アルブミンは負の電荷をもつ"],["基底膜が 正の電荷に富むから","基底膜は負の電荷に富む"]]},
   {q:"ろ過を 引き戻す方向に はたらく力は どれか。",a:2,o:[["毛細血管圧","押し出す力"],["ろ過係数 Kf","圧ではなく、膜の通しやすさを表す係数"],["血漿の膠質浸透圧","タンパクが水を血管内に引き戻す"]]}]},
  {t:"入口と出口のレバー",f:"neph",l:[
-  ["n","番人を倒したね！　最後に、GFRとRPFを動かす2本のレバーを整理しよう","aff eff"],
+  ["n","番人の門は もうすぐ。その前に、GFRとRPFを動かす2本のレバーを整理しよう","aff eff"],
   ["n","入口の輸入細動脈を締めると、入ってくる血液が減る。中の圧もRPFも下がるから、GFRとRPFが同じ向きに下がる。濾過率（FF）は変わらない","aff"],
   ["m","入口を広げたら、GFRもRPFも一緒に上がる！","aff"],
   ["n","出口の輸出細動脈を締めると、血液がせき止められて中の圧が上がる。GFRは上がるけど、流れは悪くなってRPFは下がる。だからFF＝GFR÷RPFが上がる","eff"],
   ["s","入口は同じ向き、出口は逆向き！","aff eff"],
   ["n","このレバーは、あとで出てくるホルモンが引く。アンジオテンシンIIは入口と出口の両方を締める。RPFは大きく下がり、GFRも下がるけど、FFは上がる","aff eff"],
-  ["m","ANPは入口を広げて出口を締める。だからGFRが上がるの！","aff eff"],
-  ["n","次の部屋は、このレバーを自動で動かす仕組み、GFRの調節だ",""]],
+  ["m","ANPは入口を広げて出口を締める。だからGFRが上がるの！","aff eff"]],
  q:[{q:"輸入細動脈だけが 収縮したときの 変化は どれか。",a:0,o:[["GFR↓・RPF↓・濾過率は不変","入口を締めると同じ向きに動く"],["GFR↑・RPF↓・濾過率↑","それは輸出細動脈の収縮"],["GFR↓・RPF↑・濾過率↓","このような動きにはならない"]]},
   {q:"輸出細動脈だけが 収縮したときの 変化は どれか。",a:1,o:[["GFR↓・RPF↓・濾過率は不変","それは輸入細動脈の収縮"],["GFR↑・RPF↓・濾過率↑","中の圧が上がりGFR↑、流れが悪くなりRPF↓"],["GFR↑・RPF↑・濾過率は不変","それは輸入細動脈の拡張"]]}]}],
 3:[
@@ -1342,12 +1342,12 @@ Object.assign(JIN_STORY,{
   ["n","このブレーキは秒単位。一方、同じ装置から、ゆっくり効く信号も出る。それがレニンだ","renin"],
   ["m","輸入細動脈の平滑筋細胞の一部、傍糸球体細胞がレニンを出すよ！","jg renin"],
   ["n","レニンが増えるのは、血圧が下がったとき、緻密斑に届くNaClが減ったとき、そして腎の交感神経がβ1受容体に働いたときだ","low renin"],
-  ["boss","ば、ばかな…わたしの信号を読み切るとは…！",""]],
+  ["boss","ピピ…信号を読まれている…？　奥で迎え撃つ…",""]],
  q:[{q:"尿細管糸球体フィードバックで、緻密斑が放出して 輸入細動脈を収縮させる物質は どれか。",a:0,o:[["ATP","Maxi Cl-チャネルを通って放出される"],["レニン","レニンは傍糸球体細胞が分泌する"],["アルドステロン","副腎皮質から分泌される"]]},
   {q:"緻密斑の細胞が 管腔のNaClを 取りこむ輸送体は どれか。",a:2,o:[["SGLT2","近位尿細管のNa+-グルコース共輸送体"],["ENaC","集合管主細胞のNa+チャネル"],["NKCC2","太い上行脚と緻密斑の管腔側にある"]]},
   {q:"レニンの分泌を 増やすものは どれか。",a:1,o:[["緻密斑に届く NaClの増加","NaClが減ったときに増える"],["腎交感神経の活動（β1受容体）","傍糸球体細胞のβ1受容体→cAMP↑"],["血圧の上昇","血圧が下がったときに増える"]]}]},
  {t:"速い調節とゆっくりの調節",f:"jga",l:[
-  ["n","センサーを攻略したね。最後に、時間の違いで整理しよう",""],
+  ["n","センサーのもとへ行く前に、調節を 時間の違いで整理しよう",""],
   ["n","筋原反応とTGFは、秒単位の速い自己調節。GFRとRPFの変動を小さくする","myo nacl"],
   ["n","RAA系は分〜日単位。レニンは、血中のアンジオテンシノーゲンをアンジオテンシンIに変える酵素だ","renin ang"],
   ["n","アンジオテンシンIをIIに変えるのが、アンジオテンシン変換酵素、ACE。肺や血管の内皮細胞などにある","ang"],
@@ -1384,13 +1384,12 @@ Object.assign(JIN_STORY,{
  q:[{q:"S3で グルコースを再吸収する 輸送体の組み合わせは どれか。",a:2,o:[["SGLT2＋GLUT2","それはS1・S2"],["SGLT2＋GLUT1","S3はSGLT2ではない"],["SGLT1＋GLUT1","最大輸送量は小さいが結合能力が大きく、取りこぼしを回収"]]},
   {q:"SGLT2阻害薬が 2型糖尿病の治療に 使われる理由は どれか。",a:0,o:[["近位尿細管での グルコース再吸収を減らし、尿に捨てさせるから","S1・S2のSGLT2を止める"],["インスリンの分泌を 増やすから","SGLT2阻害薬の作用ではない"],["集合管の 水再吸収を 増やすから","SGLT2は近位尿細管の輸送体"]]}]},
  {t:"回収係のまとめ",f:"prox",l:[
-  ["n","SGLT兄弟を倒したね！　最後に、近位尿細管のしくみをまとめよう",""],
+  ["n","兄弟のもとへ行く前に、近位尿細管のしくみをまとめよう",""],
   ["n","糸球体尿細管バランス。GFRが増えても減っても、ろ過された液の約6割を近位尿細管が回収する","gtb"],
   ["m","GFRが変わっても、回収する「割合」はほぼ同じ！","gtb"],
   ["n","HCO3-の回収には、炭酸脱水酵素が働く。H2O＋CO2 → H+＋HCO3- の反応だ","s1"],
   ["n","水は溶質についていく。だから管腔の中は、ずっとほぼ等張のままだったね","iso"],
-  ["n","ここで回収しきれなかったNaClと水は、ヘンレのループと遠位ネフロンで調節される",""],
-  ["s","次はいよいよ、あの長い坂だね",""]],
+  ["n","ここで回収しきれなかったNaClと水は、ヘンレのループと遠位ネフロンで調節される",""]],
  q:[{q:"糸球体尿細管バランスの説明として 正しいものは どれか。",a:0,o:[["GFRが増減しても、濾液の約6割を 近位尿細管で再吸収する","回収する割合がほぼ一定に保たれる"],["GFRが増えると、近位尿細管の再吸収率は 下がる","割合はほぼ一定"],["緻密斑が 輸入細動脈を収縮させる","それは尿細管糸球体フィードバック"]]},
   {q:"等張性再吸収の 説明として 正しいものは どれか。",a:2,o:[["水だけが 再吸収される","それは細い下行脚"],["NaClだけが 再吸収される","それは上行脚"],["溶質に伴って水も再吸収され、管腔内液は ほぼ等張に保たれる","水はアクアポリン1を通って溶質についていく"]]}]}],
 5:[
@@ -1417,18 +1416,17 @@ Object.assign(JIN_STORY,{
   ["n","⑦一方、上行脚を出た液は100 mOsm/kgまで薄まる。遠位曲尿細管、結合尿細管の先まで、ずっと薄いままだ","n100"],
   ["s","血管が通ったら、せっかくの濃さが流されちゃわない？","vr"],
   ["n","直血管もU字なんだ。下りで溶質を受け取り、上りで置いていく。溶質を持ち出しすぎずに濃さを守る。これが対向流交換系だ","vr"],
-  ["boss","わしの渦が…見破られた…！",""]],
+  ["boss","わしの渦の秘密を…だが、まだ渦は止まらぬ！",""]],
  q:[{q:"髄質の最内層の 間質浸透圧と、その主な成分の 組み合わせは どれか。",a:0,o:[["約1200 mOsm/kg ― NaClと尿素が 半分ずつ","尿素は集合管から供給される"],["約300 mOsm/kg ― NaClだけ","300は血漿と同じ。最内層はもっと濃い"],["約100 mOsm/kg ― 尿素だけ","100は上行脚を出た液の浸透圧"]]},
   {q:"直血管の はたらきとして 正しいものは どれか。",a:2,o:[["NKCC2で NaClを くみ出す","それは太い上行脚"],["ADHを 分泌する","ADHは下垂体後葉から分泌される"],["対向流交換系として、溶質を持ち出しすぎず 髄質の高浸透圧を保つ","下行枝で溶質を受け取り、上行枝で置いていく"]]},
   {q:"上行脚を出た 管腔内液の 浸透圧は どれか。",a:1,o:[["約1200 mOsm/kg（高張）","それは髄質最内層の間質"],["約100 mOsm/kg まで低下（低張）","上行脚は水を通さずNaClだけを出す"],["血漿より 高張","上行脚で希釈されるので低張"]]}]},
  {t:"濃い尿と薄い尿",f:"loop",l:[
-  ["n","渦を倒したね！　でも、ここで作った濃さは何に使うんだろう？","cd"],
+  ["n","渦の中心は もうすぐ。でも、ここで作った濃さは何に使うんだろう？","cd"],
   ["n","集合管は髄質を通って下りていく。ADHがあると、集合管が水を通すようになる。外の濃い間質に水が引き出されて、濃い尿になる","cd adh"],
   ["m","脱水のときはADHが増えて、尿が少なく濃くなる！","adh"],
   ["n","水をたくさん飲んだときはADHが減る。集合管は水を通さず、薄い尿がたくさん出る。水利尿だ","cd"],
   ["n","水を飲みすぎる状態が3日も続くと、ADHがおさえられたままになる。すると髄質からNaClと尿素が抜けて、尿を濃くする力が落ちる","n1200 urea"],
-  ["s","濃さは、ずっと作り続けないといけないんだね",""],
-  ["n","そのとおり。次は、最後の微調整をする遠位ネフロンだ",""]],
+  ["s","濃さは、ずっと作り続けないといけないんだね",""]],
  q:[{q:"水負荷を 数日続けたときの 変化として 正しいものは どれか。",a:0,o:[["ADHが抑制され、髄質から NaClと尿素が抜けて 尿濃縮能が低下する","髄質の高浸透圧は作り続ける必要がある"],["ADHが増えて、尿濃縮能が 上がる","水負荷ではADHは抑制される"],["髄質の浸透圧が 上がり続ける","NaClと尿素が抜けて下がる"]]},
   {q:"脱水のときの 変化として 正しいものは どれか。",a:1,o:[["ADH↓・尿量↑","それは水を多く飲んだとき（水利尿）"],["ADH↑・集合管の水再吸収↑・尿量↓","抗利尿：濃い尿が少し出る"],["ADH↑・尿量↑","ADHが増えると尿量は減る"]]}]}],
 6:[
@@ -1454,12 +1452,12 @@ Object.assign(JIN_STORY,{
   ["s","だから「Na+をためろ、K+を捨てろ」なんだ！","aldo"],
   ["m","ENaCを止めるのがアミロライド。ループ利尿薬とちがって、K+を体内に保てるの！","amil"],
   ["n","もうひとつ。ADHが来ると、水チャネルAQP2が管腔側膜に組みこまれる。ADHがないときの主細胞は、水をほとんど通さないんだ","adh aqp2"],
-  ["boss","ぐっ…わしの命令を逆手にとるとは…！",""]],
+  ["boss","わしの命令を読んだか…だが、将軍の間は まだ先だ！",""]],
  q:[{q:"アルドステロンの 主細胞での作用として 正しいものは どれか。",a:0,o:[["ENaCを活性化して Na+再吸収↑、ROMK・BKを活性化して K+分泌↑","Na+をためて、K+を捨てる"],["ENaCを阻害して Na+排泄を増やす","それはアミロライド"],["AQP2を 管腔側膜に組みこむ","それはADH"]]},
   {q:"アミロライドの説明として 正しいものは どれか。",a:1,o:[["NKCC2を阻害する ループ利尿薬","アミロライドはENaCに働く"],["ENaCを阻害し、K+を体内に保持できる 利尿薬","ループ利尿薬と違い、K+を体内に保持できる"],["NCCを阻害する 降圧薬","それはサイアザイド系"]]},
   {q:"ADHの 主細胞での作用は どれか。",a:2,o:[["ADHがないときに AQP2が 管腔側膜に入る","逆。ADHがあるときに入る"],["AQP1を 管腔側膜に増やす","AQP1は下行脚や近位尿細管に常にある"],["AQP2を 管腔側膜に組みこみ、水の透過性を上げる","側底膜にはAQP3・AQP4が常にある"]]}]},
  {t:"間在細胞と利尿薬の地図",f:"prin",l:[
-  ["n","将軍を倒したね！　最後に、集合管のもう1つの細胞と、利尿薬の地図をまとめよう",""],
+  ["n","将軍の間の前に、集合管のもう1つの細胞と、利尿薬の地図をまとめよう",""],
   ["n","間在細胞は、主細胞とちがってNaClをほとんど運ばない。担当はH+とHCO3-だ","ic"],
   ["m","A型はH+を尿に出す！　K+が足りないときは、K+の再吸収もするよ","ic"],
   ["n","B型は向きが逆で、HCO3-を出す。アルドステロンは、A型のH+-ATPaseも活性化するんだ","ic aldo"],
@@ -1530,12 +1528,12 @@ Object.assign(JIN_STORY,{
   ["n","⑤下垂体後葉からADHを出させて、水も取り戻す","adh"],
   ["n","⑥そして、ROMKとBKはおさえる。Na+はためるけれど、K+は捨てすぎない。低K+血症を防ぐ工夫だ","romk"],
   ["s","アルドステロンはROMKを活性化するのに、アンジオテンシンIIはおさえるんだ！","romk aldo"],
-  ["boss","わが命令書を…すべて読み解いたというのか…！",""]],
+  ["boss","わが命令書を読んだか…だが、まだ序の口よ！",""]],
  q:[{q:"アンジオテンシンIIの作用として 正しいものは どれか。",a:0,o:[["近位尿細管のNHE3を活性化し、Na+再吸収を増やす","Na+と一緒に水も再吸収される"],["遠位ネフロンのROMKを活性化し、K+排泄を増やす","アンジオテンシンIIはROMK・BKを抑制する"],["副腎皮質に働き、アルドステロン分泌を抑える","促進する"]]},
   {q:"アンジオテンシンIIが 輸入・輸出細動脈を 両方収縮させたときの 変化は どれか。",a:2,o:[["RPF↑・GFR↑・濾過率は不変","血管が締まるので流れは減る"],["RPF↓・GFR↓・濾過率は不変","それは輸入細動脈だけの収縮"],["RPF↓↓・GFR↓・濾過率↑","RPFの低下がGFRより大きい"]]},
   {q:"副腎皮質からの アルドステロン分泌を 刺激するものは どれか。",a:1,o:[["ANPと 血漿K+の低下","ANPは分泌を抑える"],["アンジオテンシンIIと 血漿K+の上昇","K+↑→脱分極→Ca2+流入→分泌"],["ADHと ACE阻害薬","ACE阻害薬はアンジオテンシンIIを減らす"]]}]},
  {t:"捨てるチーム ANP",f:"raa",l:[
-  ["n","アンジオテンシンIIを倒したね！　最後に、反対側の「捨てる」チームを見ておこう","anp"],
+  ["n","アンジオテンシンIIに いどむ前に、反対側の「捨てる」チームを見ておこう","anp"],
   ["n","血液が多すぎると、心房の筋が引きのばされて、ANPが出る。心房性ナトリウム利尿ペプチドだ","atr anp"],
   ["m","ANPは輸入細動脈を広げて、輸出細動脈を締める！　だからGFRが上がるの","gfr"],
   ["n","さらに、NCCとENaCをおさえてNa+の再吸収を減らし、レニンとアルドステロンの分泌もおさえる。RAA系と反対向きだ","anp"],
@@ -1570,20 +1568,20 @@ Object.assign(JIN_STORY,{
   ["s","体が酸性に傾いたら？","acid"],
   ["n","アシデミアでは、K+の分泌が減って、再吸収が増える。高K+血症を助長するんだ","acid"],
   ["m","高K食をとると、NCCがおさえられて、Na+も一緒に捨てるよ！","sec"],
-  ["boss","ぐぬぬ…しまわれ、捨てられ…わしのK+が…！",""]],
+  ["boss","しまっても捨てても、バナナは まだまだあるぞ！",""]],
  q:[{q:"食後に増えた血漿K+を 細胞内へ取りこませる因子は どれか。",a:0,o:[["インスリンと カテコールアミン（β2）","Na+-K+-ATPaseを活性化する"],["ADHと ANP","K+の細胞内取りこみの調節因子ではない"],["アンジオテンシンIIと ACE","K+の細胞内取りこみの調節因子ではない"]]},
   {q:"主細胞のK+分泌を 増やすものは どれか。",a:2,o:[["アシデミア","分泌は減る"],["血漿K+の低下","K+が上がったときに分泌が増える"],["遠位ネフロンの 流量の増加","ほかにアルドステロン、血漿K+↑、管腔の負電位"]]},
   {q:"アシデミアのときの K+の扱いとして 正しいものは どれか。",a:1,o:[["K+分泌が増え、低K+血症になる","分泌は減る"],["K+分泌が減って 再吸収が増え、高K+血症を助長する","酸性に傾くとK+がたまりやすい"],["K+の扱いは 変わらない","分泌↓・再吸収↑と変化する"]]}]},
  {t:"高K+血症のときの一手",f:"kdist",l:[
-  ["n","バナナ大王を倒したね！　最後に、治療とのつながりを見よう",""],
+  ["n","バナナ大王に いどむ前に、治療とのつながりを見よう",""],
   ["n","腎不全の患者さんなどの高K+血症には、GI療法。ブドウ糖（Glucose）とインスリン（Insulin）を投与する","gi"],
   ["sora","インスリンで、K+を細胞にしまうんだね！","ins"],
   ["n","そう。骨格筋や肝細胞のNa+-K+-ATPaseを活性化して、K+を細胞の中へ取りこませる","pump"],
   ["sora","ブドウ糖も入れるのはなんで？","gi"],
   ["n","インスリンで低血糖にならないようにするためだよ","gi"],
   ["m","似た名前のGIK療法は、K+も一緒に入れる！　急性心筋梗塞や心不全で心筋のATPが減って、K+を取りこめなくなったときに、心筋の中のK+を高めるの","gi"],
-  ["n","これで腎臓の旅はおしまい。ここまで来たしずくなら、試験もこわくないよ",""],
-  ["s","ありがとう、ネフ先輩、ミクロ！",""]],
+  ["n","あとはバナナ大王だけ。ここまで来たしずくなら、こわくないよ",""],
+  ["s","よし、いくぞ！",""]],
  q:[{q:"GI療法で ブドウ糖を一緒に投与する 理由は どれか。",a:0,o:[["インスリンによる 低血糖を防ぐため","K+を下げる主役はインスリン"],["ブドウ糖が K+を 尿に捨てさせるため","そのような作用ではない"],["ブドウ糖が ENaCを 阻害するため","ENaCを阻害するのはアミロライド"]]},
   {q:"GI療法で 血漿K+が下がる しくみは どれか。",a:1,o:[["インスリンが ENaCを阻害する","K+の細胞内取りこみによる"],["インスリンが Na+-K+-ATPaseを活性化し、K+を細胞内へ取りこませる","骨格筋や肝細胞で"],["ブドウ糖が NCCを抑制する","NCCを抑えるのは高K食やサイアザイド"]]}]}]});
 
@@ -1601,18 +1599,31 @@ JIN.STORY=JIN_STORY;JIN.CARD=JIN_CARD;
 
 let SV=null;
 const stKey=(s,a)=>s+"-"+a;
-function story(s,a,after){SV={s:+s,a:+a,i:0,after:after||(()=>home())};storyShow()}
+function story(s,a,after,go){SV={s:+s,a:+a,i:0,after:after||(()=>home()),go:go||"おわる"};storyShow()}
 function storyShow(){const A=GM.STORY[SV.s][SV.a],n=SV.i,L=A.l,last=n+1>=L.length,ln=L[n];TK={s:SV.s};
- show(`<div class="rd"><div class="row"><span class="sp small dim center">📜 ${SV.s+1} ${chem(ST[SV.s].n)}　第${SV.a+1}幕</span></div>
+ show(`<div class="rd"><div class="row"><span class="sp small dim center">📜 ${SV.s+1} ${chem(ST[SV.s].n)}　フロア${SV.a+1}</span></div>
  <p class="y center mt">${chem(A.t)}</p>${figHtml(A.f,(ln[2]||"").split(" ").filter(Boolean))}
  <div class="talk lg mt" id="lg" tabindex="0" aria-label="会話ログ">${L.slice(0,n+1).map((l,j)=>{const c=who(l[0]);return `<div class="ln${j===n?" new":" old"}${l[0]==="boss"?" bs":""}"><span class="face">${c.e}</span><div><span class="nm" style="color:${c.c}">${esc(c.n)}</span><p>${chem(l[1])}</p></div></div>`}).join("")}</div></div>`);
- setBar(`<div class="grid2"><button class="cmd" data-act="sskip">とばす</button><button class="cmd pri" data-act="snext" id="sn">${last?(A.q&&A.q.length?"理解チェックへ":"おわる"):`つぎへ <span class="small dim">${n+1}/${L.length}</span>`}</button></div>`);
+ setBar(`<div class="grid2"><button class="cmd" data-act="sskip">とばす</button><button class="cmd pri" data-act="snext" id="sn">${last?SV.go:`つぎへ <span class="small dim">${n+1}/${L.length}</span>`}</button></div>`);
  lgBottom();const sn=document.getElementById("sn");if(sn)sn.focus({preventScroll:true})}
 function storyNext(){if(!SV)return;SV.i++;const A=GM.STORY[SV.s][SV.a];if(SV.i<A.l.length)return storyShow();storyDone(false)}
 function storySkip(){if(!SV)return;storyDone(true)}
-function storyDone(skipped){const k=stKey(SV.s,SV.a),A=GM.STORY[SV.s][SV.a];if(!skipped||st.story[k]===undefined)st.story[k]=st.story[k]||(skipped?0:1);if(SV.a===0)st.talked[SV.s]=1;save();
- if(!skipped&&A.q&&A.q.length){SV.qi=0;SV.ok=0;SV.wrong=[];SV.qs=A.q.map(q=>{const ord=shuffle(q.o.map((_,j)=>j));return{q:q.q,ch:ord.map(j=>q.o[j][0]),ex:ord.map(j=>q.o[j][1]),a:ord.indexOf(q.a)}});return sqShow()}
+function storyDone(skipped){const k=stKey(SV.s,SV.a);if(!skipped||st.story[k]===undefined)st.story[k]=st.story[k]||(skipped?0:1);if(SV.a===0)st.talked[SV.s]=1;save();
  const f=SV.after;SV=null;TK=null;f()}
+// フロア4：総まとめ（図と要点）→ボス
+let F4=null;
+function floor4(s,after,go){s=+s;TK={s};const C=GM.CARD&&GM.CARD[s],S=ST[s],b=who("boss");st.story[stKey(s,3)]=1;save();F4=after;
+ show(`<div class="row"><span class="sp small dim center">📜 ${s+1} ${chem(S.n)}　フロア4</span></div>
+ <p class="y center mt">総まとめ${C?"："+chem(C.t):""}</p>${C?figHtml(C.f,[]):""}
+ <div class="win mt"><ul class="pts small">${(C?C.sum:S.pts).map(x=>`<li>${chem(x)}</li>`).join("")}</ul></div>
+ <div class="talk mt"><div class="ln bs new"><span class="face">${b.e}</span><div><span class="nm" style="color:${b.c}">${esc(b.n)}</span><p>よくぞ ここまで来た…。ここまでの すべてを ためしてやろう！</p></div></div></div><div class="nxsp"></div>`);
+ setBar(`<button class="cmd pri" data-act="f4go" id="f4">${go||"ボスに いどむ"}</button>`);document.getElementById("f4").focus({preventScroll:true})}
+// フロアに入る前：はじめてなら ものがたりを自動で流す
+function preFloor(s,k,then){const ST2=GM.STORY&&GM.STORY[s];
+ if(ST2&&k<3&&ST2[k]&&st.story[stKey(s,k)]===undefined){story(s,k,then,"たたかいへ");return true}
+ if(ST2&&k===3&&st.story[stKey(s,3)]===undefined){floor4(s,then);return true}
+ return false}
+const yKeys=(s,acts)=>{const S=GM.STORY&&GM.STORY[s];if(!S)return [];return [].concat(...acts.map(a=>S[a]&&S[a].q?S[a].q.map((_,j)=>`y:${s}-${a}-${j}`):[]))};
 function sqShow(){const Q=SV.qs[SV.qi];
  show(`<div class="row"><span class="sp small dim center">📜 理解チェック ${SV.qi+1}/${SV.qs.length}${st.storyQ[stKey(SV.s,SV.a)]?"":`　全問正解で 💎100`}</span></div>
  <div class="win q mt"><p>${chem(Q.q)}</p></div><div class="ch">${Q.ch.map((c,i)=>`<button class="cmd" data-act="sqa" data-v="${i}">${chem(c)}</button>`).join("")}</div><div id="log"></div>`)}
@@ -1641,8 +1652,8 @@ function home(){G=null;SV=null;const cl=Object.keys(st.clear).length;setTimeout(
  show(`<div class="row"><button class="herb" data-act="title">◀ シリーズ</button></div><div class="logo">${GM.logo}<h1>${GM.title}</h1><p class="dim small">${GM.tagline}</p></div>
  ${(()=>{const o=loadBattle();if(!o)return "";const m=o.mons[o.mi];return `<button class="cmd pri" data-act="resume">つづきから<br><span class="small">${esc(o.title)}${o.mode==="dungeon"?`　${o.mi+1}/${o.mons.length}体目`:o.mode==="endless"?`　${o.kills}体 たおした`:""}　HP ${o.hp}${m?`　vs ${esc(m.name)}`:""}</span></button><div class="mt"></div>`})()}<div class="win stat"><span>しずく</span><span>Lv ${st.lv}　HP ${maxHP()}　こうげき ${ATK()}</span><span>つぎのLvまで</span><span>${need()-st.exp}</span><span>じゅもん</span><span>${st.spells.length} / ${SPO.length}　　やくそう 🌿×${st.herb}</span></div>
  ${MIGMSG?`<div class="win mt center y">${MIGMSG}</div>`:""}<div class="grid2 mt"><button class="cmd pri" data-act="gacha">🎰 ガチャ<br><span class="small">💎 ${meta.stones}</span></button><button class="cmd" data-act="gear">🛡 そうび<br><span class="small dim">${Object.values(meta.equip).filter(Boolean).map(id=>GID[id].e).join("")||"なし"}</span></button></div>
- <div class="win mt"><p class="y">ダンジョンを えらぶ　<span class="dim small">クリア ${cl}/${ST.length}</span></p><div class="list mt">${ST.map((S,i)=>`<button class="cmd" data-act="talk" data-v="${i}"><span style="float:right">${st.talked[i]?"💬":""}${st.perfect[i]?"🏅":""}${st.clear[i]?"👑":MONS[i][3][0]}</span>${i+1} ${S.n}${S.sub?`<span class="sub">${S.sub}</span>`:""}</button>`).join("")}</div></div>
- <div class="grid2 mt"><button class="cmd" data-act="endless">れんぞくバトル<br><span class="dim small">最高 ${st.best}体</span></button><button class="cmd" data-act="review">ふくしゅう洞窟<br><span class="dim small">${st.miss.length}問</span></button><button class="cmd" data-act="book">じゅもんの書</button><button class="cmd" data-act="zukan">まもの図鑑</button></div>${GM.STORY?`<button class="cmd mt" data-act="stories">📜 ものがたり（試作）</button>`:""}
+ <div class="win mt"><p class="y">ダンジョンを えらぶ　<span class="dim small">クリア ${cl}/${ST.length}</span></p><div class="list mt">${ST.map((S,i)=>`<button class="cmd" data-act="town" data-v="${i}"><span style="float:right">${st.talked[i]?"💬":""}${st.perfect[i]?"🏅":""}${st.clear[i]?"👑":MONS[i][3][0]}</span>${i+1} ${S.n}${S.sub?`<span class="sub">${S.sub}</span>`:""}</button>`).join("")}</div></div>
+ <div class="grid2 mt"><button class="cmd" data-act="endless">れんぞくバトル<br><span class="dim small">最高 ${st.best}体</span></button><button class="cmd" data-act="review">ふくしゅう洞窟<br><span class="dim small">${st.miss.length}問</span></button><button class="cmd" data-act="book">じゅもんの書</button><button class="cmd" data-act="zukan">まもの図鑑</button></div>
  <button class="cmd mt" data-act="sound">おと：${st.sound?"あり":"なし"}</button>
  <p class="dim small mt">${GM.note}</p>`)}
 function town(s){G=null;s=+s;const S=ST[s],n=learn(s),here=LEARN[s]||[];
@@ -1650,13 +1661,13 @@ function town(s){G=null;s=+s;const S=ST[s],n=learn(s),here=LEARN[s]||[];
  ${n.length?`<div class="win mt"><p class="y">${GM.elder}から じゅもんを さずかった！</p>${n.map(id=>`<p class="mt">✨ ${SP[id].n}<br><span class="small dim">${chem(SP[id].d)}</span></p>`).join("")}</div>`:""}
  <div class="win mt"><p class="dim small">${GM.elder}のまとめ</p><ul class="pts">${S.pts.map(p=>`<li>${chem(p)}</li>`).join("")}</ul></div>
  ${vidBox(S)}<div class="win mt"><p class="dim small">たたかいかた</p><ul class="pts small">
- <li><span class="y">たたかう</span>：○×・仕分け。当てるとMP+1</li>
+ <li><span class="y">たたかう</span>：○×・仕分け（ものがたりの問題も ここで出る）。当てるとMP+1</li>
  <li><span class="y">とくぎ</span>：4〜5択。ダメージ2.5倍・MP+2。外すと敵の行動が一気に早まる</li>
  <li><span class="y">じゅもん</span>：MPを使う。まものの「🔍」を読み、病態に合う薬やホルモンを選ぶ。いちばん効くものなら大ダメージ＋<span class="y">もう一度 うごける</span>。まちがえると効かない、ときには逆効果</li>
  <li>⏳の横の印が まものの つぎの行動（⚔️こうげき・💢ためこうげき・☠️病態悪化・🌀状態異常）。💢は とくぎ か 弱点じゅもんで くずせる</li>
  <li>ボスの 状態異常は、合う じゅもんか 3問 正解で なおる</li></ul></div>
  <div class="win mt center"><p class="dim small">このダンジョンの まもの</p><p style="font-size:2rem;letter-spacing:10px">${MONS[s].map((m,i)=>st.zukan[s+"-"+i]?m[0]:"❔").join("")}</p>${here.length?"":`<p class="small dim">ここで おぼえる じゅもんは ない</p>`}</div>
- ${loadBattle()?`<p class="small dim mt">※ 中断中のバトルがあります。ここで はいると、そのデータは消えます。</p>`:""}${S.talk&&S.talk.length?`<button class="cmd mt" data-act="talk" data-v="${s}">💬 会話を もういちど 読む</button>`:""}<button class="cmd pri mt" data-act="dungeon" data-v="${s}">ダンジョンに はいる</button>`)}
+ ${loadBattle()?`<p class="small dim mt">※ 中断中のバトルがあります。ここで はいると、そのデータは消えます。</p>`:""}${GM.STORY&&GM.STORY[s]?`<div class="win mt"><p class="dim small">📜 ものがたり（はじめて入ったときは 自動で流れる）</p><div class="list mt">${GM.STORY[s].map((A,a)=>`<button class="cmd" data-act="sread" data-v="${s}-${a}">フロア${a+1}：${chem(A.t)}<span class="sub">${st.story[stKey(s,a)]!==undefined?"読んだ":"まだ"}${st.storyQ[stKey(s,a)]?"　✅ 問題ノーミス":""}</span></button>`).join("")}<button class="cmd" data-act="f4read" data-v="${s}">フロア4：総まとめ と ボス<span class="sub">${st.cards[s]?"🃏 機序カード 入手ずみ":"クリアで 機序カードが 図鑑に入る"}</span></button></div></div>`:S.talk&&S.talk.length?`<button class="cmd mt" data-act="talk" data-v="${s}">💬 会話を もういちど 読む</button>`:""}<button class="cmd pri mt" data-act="enter" data-v="${s}">ダンジョンに はいる</button>`)}
 function zukan(){show(`<div class="row">${back}<h2 class="y">まもの図鑑</h2></div>${GM.CARD?`<p class="y mt">🃏 機序カード</p>`+Object.keys(GM.CARD).map(s=>st.cards[s]?cardHtml(+s):`<div class="win mt dim small">？？？（${+s+1} ${ST[s].n}を クリアすると てにはいる）</div>`).join(""):""}
  ${ST.map((S,s)=>`<p class="mt small dim">${s+1} ${S.n}</p><div class="zk">${MONS[s].map((m,i)=>{const n=st.zukan[s+"-"+i];return `<div class="${n?"":"no"}"><span>${m[0]}</span>${n?m[1]+"<br>×"+n:"？？？"}</div>`}).join("")}</div>`).join("")}`)}
 function book(){const where=id=>{for(const k in LEARN)if(LEARN[k].includes(id))return +k};
@@ -1669,7 +1680,7 @@ function fnsFor(mode,s){
  if(mode==="dungeon"){const prev=[].concat(...BQ.slice(0,s)),mine=()=>BQ[s].concat(WQ[s]);return{refill:()=>shuffle(POOL[s]),bqRefill:()=>shuffle(mine().concat(prev)),edmg:m=>maxHP()*(m.boss?.3:.22)*Math.min(1.4,Math.max(.6,1+(s-(st.lv-1))*.06)),retry:()=>dungeon(s)}}
  if(mode==="endless"){const all=()=>shuffle([].concat(...POOL)),bqA=()=>shuffle([].concat(...BQ).concat([].concat(...WQ).filter(k=>{const[a,i]=k.slice(2).split("-").map(Number);return st.spells.includes(bestOf(mon(a,i)))})));return{refill:all,bqRefill:bqA,edmg:m=>maxHP()*((m.boss?.26:.18)+G.kills*.012),retry:endless}}
  return{refill:()=>shuffle(st.miss.filter(k=>qOf(k))),bqRefill:()=>[],edmg:()=>maxHP()*.12,retry:review}}
-const DATAK=["mode","s","title","hp","mp","mi","combo","miss","missN","kills","lv0","pool","bq","mons","shield","sts","stsN"];
+const DATAK=["mode","s","title","hp","mp","mi","combo","miss","missN","kills","lv0","pool","bq","mons","shield","sts","stsN","pd","ya"];
 function saveBattle(){if(!G)return;const o={};DATAK.forEach(k=>o[k]=G[k]);try{localStorage.setItem(SAVEK,JSON.stringify(o))}catch(e){}}
 function clearBattle(){try{localStorage.removeItem(SAVEK)}catch(e){}}
 function loadBattle(){try{const o=JSON.parse(localStorage.getItem(SAVEK));return o&&o.mons&&o.mons.length?o:null}catch(e){return null}}
@@ -1678,9 +1689,13 @@ function resume(){const o=loadBattle();if(!o)return home();G=Object.assign({lock
  if(G.mon&&typeof G.mon.hp!=="number"&&G.hp>0)return encounter();
  if(!G.mon||G.hp<=0||G.mon.hp<=0){G.fb=true;return next()}G.msg="つづきから 再開した！";sEnc();menu()}
 function startBattle(o){const B=GB();G=Object.assign({hp:maxHP(),mp:o.mode=="review"?0:Math.min(mpMax(),3+B.mpstart),mi:0,combo:0,miss:[],missN:0,kills:0,lv0:st.lv,lock:false,fb:false,shield:B.guard,sts:null,stsN:0},o,fnsFor(o.mode,o.s));encounter()}
+// ダンジョンの構成：フロアごとの手下の数（フロア4はこのあとボス）
+const FLOOR_N=[3,3,3,2],MINION_HITS=2,BOSS_HITS=6;
+const flOf=(g,i)=>{const m=g.mons[i];return m?(m.fl!=null?m.fl:(m.boss?3:Math.min(i,2))):-1};
+function enter(s){s=+s;const S=ST[s];if(!(GM.STORY&&GM.STORY[s])&&S.talk&&S.talk.length&&!st.talked[s]){G=null;TK={s,i:0,after:()=>dungeon(s)};return talkShow()}dungeon(s)}
 function dungeon(s){s=+s;learn(s);const prev=[].concat(...BQ.slice(0,s)),mine=()=>BQ[s].concat(WQ[s]);
  startBattle({mode:"dungeon",s,title:ST[s].n,pool:shuffle(POOL[s]),bq:shuffle(mine()).concat(shuffle(prev)),
-  mons:shuffle([0,1,2]).map(i=>Object.assign(mon(s,i),{hits:3})).concat([Object.assign(mon(s,3),{hits:8})])})}
+  mons:FLOOR_N.flatMap((n,f)=>shuffle([0,1,2]).concat(shuffle([0,1,2])).slice(0,n).map(i=>Object.assign(mon(s,i),{hits:MINION_HITS,fl:f}))).concat([Object.assign(mon(s,3),{hits:BOSS_HITS,fl:3})])})}
 function endless(){startBattle({mode:"endless",title:"れんぞくバトル",pool:shuffle([].concat(...POOL)),bq:[],mons:[]})}
 function review(){const ks=st.miss.filter(k=>qOf(k));st.miss=ks;save();
  if(!ks.length)return show(`<div class="row">${back}<h2 class="y">ふくしゅう洞窟</h2></div><div class="win mt center"><p style="font-size:3rem">🕳️</p><p>洞窟は からっぽだ。</p><p class="dim small">バトルで まちがえた問題や、えらびまちがえた じゅもんが、ここに すみつく。</p></div>`);
@@ -1694,10 +1709,12 @@ function pickIntent(m){const g=G;if(g.mode==="review")return "atk";
  return Math.random()<.2?"big":"atk"}
 function intentTxt(m){const S=stsOf(m);return({atk:["⚔️","こうげき"],big:["💢","ためこうげき（ダメージ×1.8）"],worsen:["☠️","病態を 悪化させる（HPかいふく）"],sts:["🌀",(S?S.n:"状態異常")+"を ひきおこす"]})[m.intent||"atk"]}
 function encounter(){const g=G;
+ if(g.mode==="dungeon"){g.pd=g.pd||{};const fl=flOf(g,g.mi);if(!g.pd[fl]){if(preFloor(g.s,fl,()=>encounter()))return;g.pd[fl]=1;
+   const yk=yKeys(g.s,fl<3?[fl]:[0,1,2]);if(yk.length){const rest=g.pool.filter(k=>!yk.includes(k));g.pool=fl<3?shuffle(yk).concat(rest):shuffle(yk.concat(rest.splice(0,yk.length))).concat(rest)}}}
  if(g.mode==="endless"){const s=Math.random()*ST.length|0,boss=g.kills%5===4;g.mons[g.mi]=Object.assign(mon(s,boss?3:Math.random()*3|0),{hits:boss?5:2})}
- const m=g.mons[g.mi];g.mon=m;m.max=Math.round(m.hits*ATK());m.hp=m.max;m.cd=(g.mode==="review"?4:3)+GB().cd;m.xa=0;m.ic=0;m.intent=pickIntent(m);g.msg=`${m.name}が あらわれた！`;sEnc();menu()}
+ const m=g.mons[g.mi];g.mon=m;m.max=Math.round(m.hits*ATK());m.hp=m.max;m.cd=(g.mode==="review"?4:3)+GB().cd;m.xa=0;m.ic=0;m.intent=pickIntent(m);g.msg=(g.note?g.note+"　":"")+`${m.name}が あらわれた！`;g.note="";sEnc();menu()}
 function frame(c){const g=G,m=g.mon,mx=maxHP(),S=stsDef();if(!m.intent)m.intent=pickIntent(m);
- show(`<div class="row"><button class="herb" data-act="quit" aria-label="にげる">にげる</button><span class="sp small dim center">${g.title}${g.mode==="dungeon"?`　${g.mi+1}/${g.mons.length}`:g.mode==="endless"?`　${g.kills}体`:""}</span></div>
+ show(`<div class="row"><button class="herb" data-act="quit" aria-label="にげる">にげる</button><span class="sp small dim center">${g.title}${g.mode==="dungeon"?`　フロア${flOf(g,g.mi)+1}/4　${g.mons.slice(0,g.mi+1).filter((_,i)=>flOf(g,i)===flOf(g,g.mi)).length}/${g.mons.filter((_,i)=>flOf(g,i)===flOf(g,g.mi)).length}体目`:g.mode==="endless"?`　${g.kills}体`:""}</span></div>
  <div class="win hud mt"><span>Lv${st.lv}</span><div class="bar ${hpCls(g.hp,mx)}" id="hpb"><i style="width:${g.hp/mx*100}%"></i></div><span id="hpt">${g.hp}/${mx}</span><span class="mp" id="mpt">MP ${g.mp}</span></div>
  <div class="tags" id="tags">${tagsHtml()}</div>
  <div class="field" id="field" style="--floor:${FLOOR[(m.s==null?7:m.s)%FLOOR.length]}"><div class="mname"><span>${m.name}</span><div class="bar ${hpCls(m.hp,m.max)}" id="mb"><i style="width:${m.hp/m.max*100}%"></i></div><span class="cd ${m.cd<=1?"warn":""}" id="cd" title="攻撃までのターンと、つぎの行動">⏳${m.cd} ${intentTxt(m)[0]}</span></div><div class="spr ${m.boss?"boss":""}${m.intent==="big"?" charge":""}" id="spr">${m.e}</div></div>${c}`)}
@@ -1754,6 +1771,7 @@ function showLog(L,ex){save();saveBattle();G.fb=true;document.getElementById("lo
  setBar(`<button class="cmd pri" data-act="next" id="nx">つぎへ</button>`);
  const nx=document.getElementById("nx");nx.focus({preventScroll:true});nxView()}
 function answer(v,btn){const g=G;if(!g||g.lock||!g.q)return;g.lock=true;v=+v;const q=g.q,m=g.mon,right=v===q.a,fast=(Date.now()-g.t0)/1000<g.qtime,sk=g.qt==="skill";
+ if(q.k[0]==="y"){const a=q.k.slice(2).split("-")[1];g.ya=g.ya||{};const e=g.ya[a]||(g.ya[a]={n:0,bad:0});e.n++;if(!right)e.bad++}
  const gi=document.getElementById("gi");gi.style.transition="none";gi.style.width=getComputedStyle(gi).width;
  document.querySelectorAll("[data-act=ans]").forEach(b=>{b.disabled=true;const i=+b.dataset.v;b.classList.add(i===q.a?"good":b===btn?"bad":"off")});
  let L="";
@@ -1784,8 +1802,7 @@ function flashWeak(){if(matchMedia("(prefers-reduced-motion:reduce)").matches)re
 function useHerb(){const g=G;if(!g||g.lock||!st.herb||g.hp>=maxHP())return;g.lock=true;st.herb--;const h=Math.min(maxHP()-g.hp,Math.ceil(maxHP()*.5));g.hp+=h;frame(`<div id="log"></div>`);beep(660,.1);beep(880,.15,"square",.1);
  showLog(monTurn(`<p>しずくは やくそうを つかった！ HPが ${h} かいふくした！</p>`,0),"")}
 function next(){const g=G;if(!g||!g.fb)return;if(g.hp<=0)return finish(false);
- if(g.mon.hp<=0){g.mi++;if(g.mode!=="endless"&&g.mi>=g.mons.length)return finish(true);
-  const nm=g.mons[g.mi];if(g.mode==="dungeon"&&nm&&nm.boss&&GM.STORY&&GM.STORY[g.s]&&GM.STORY[g.s][1]&&st.story[stKey(g.s,1)]===undefined){g.fb=false;return story(g.s,1,()=>encounter())}
+ if(g.mon.hp<=0){const fl=g.mode==="dungeon"?flOf(g,g.mi):-1;if(fl>=0&&fl<3&&flOf(g,g.mi+1)!==fl){const e=g.ya&&g.ya[fl],k=stKey(g.s,fl);if(e&&e.n&&!e.bad&&!st.storyQ[k]){st.storyQ[k]=1;const got=addStones(100);if(got)g.note=`📜 ものがたりの問題を ノーミス！ 💎+${got}`}}g.mi++;if(g.mode!=="endless"&&g.mi>=g.mons.length)return finish(true);
   return encounter()}menu()}
 function finish(win){const g=G;G=null;clearBattle();R=g;let head,body="",stones=0,extra="";
  if(g.mode==="dungeon"){if(win){const first=!st.clear[g.s],fp=!g.missN&&!st.perfect[g.s];st.clear[g.s]=1;st.herb++;if(!g.missN)st.perfect[g.s]=1;
@@ -1796,18 +1813,16 @@ function finish(win){const g=G;G=null;clearBattle();R=g;let head,body="",stones=
  else if(g.mode==="endless"){const nb=g.kills>st.best;if(nb)st.best=g.kills;head=`${g.kills}体 たおした！`;body=nb?'<p class="y">さいこうきろく こうしん！</p>':`<p class="dim">さいこうきろく ${st.best}体</p>`;win=nb&&g.kills>0}
  else{head=win?"わすれんぼうを たおした！":"わすれんぼうに やられた…";if(win)stones=50;body=`<p>洞窟に のこる問題：${st.miss.length}問</p>`}
  save();const got=addStones(stones);if(win)sWin();
- const S3=win&&g.mode==="dungeon"&&GM.STORY&&GM.STORY[g.s]&&GM.STORY[g.s][2];
- const nextBtn=win&&g.mode==="dungeon"&&g.s<ST.length-1?`<button class="cmd ${S3?"":"pri"} mt" data-act="talk" data-v="${g.s+1}">つぎのダンジョン：${ST[g.s+1].n}</button>`:"";
+ const nextBtn=win&&g.mode==="dungeon"&&g.s<ST.length-1?`<button class="cmd pri mt" data-act="town" data-v="${g.s+1}">つぎのダンジョン：${ST[g.s+1].n}</button>`:"";
  show(`<div class="win center mt"><p style="font-size:3.4rem;line-height:1.3">${win?(g.mode==="dungeon"?"👑":"🎉"):"💧"}</p><p class="big">${head}</p>${body}${got?`<p class="y big mt">💎 ${STONE} +${got}</p><p class="small dim">いま ${meta.stones}　（ガチャ 1回 100）</p>`:""}${extra}<p class="mt">Lv ${g.lv0}${st.lv>g.lv0?` → <span class="y">Lv ${st.lv}</span>`:""}　たおした数 ${g.kills}　ミス ${g.missN}</p></div>
- ${S3?`<button class="cmd pri mt" data-act="sread" data-v="${g.s}-2">📜 ものがたりの つづき：${chem(S3.t)}</button>`:""}
  ${g.miss.length?`<div class="win mt"><p class="y">まちがえた ところ</p><ul class="miss">${g.miss.map(m=>`<li><b>${chem(m.t)}</b>${chem(m.ex).replace(/\n/g,"<br>")}</li>`).join("")}</ul></div>`:""}
  ${meta.stones>=100?`<button class="cmd mt" data-act="gacha">🎰 ガチャを ひく（💎${meta.stones}）</button>`:""}
- ${nextBtn}<button class="cmd mt ${nextBtn||S3?"":"pri"}" data-act="retry">もういちど たたかう</button><button class="cmd mt" data-act="home">まちへ もどる</button>`)}
+ ${nextBtn}<button class="cmd mt ${nextBtn?"":"pri"}" data-act="retry">もういちど たたかう</button><button class="cmd mt" data-act="home">まちへ もどる</button>`)}
 
 const A={resume,home,town,talk,tnext:talkNext,tskip:talkSkip,title,pick,zukan,book,dungeon,endless,review,menu,spells,cast,ans:answer,next,herb:useHerb,atk:()=>ask("atk"),skill:()=>ask("skill"),
  gacha,pull,pullshow:pullShow,gear:gearScr,equip,unequip,enh,
  snext:storyNext,sskip:storySkip,sqa:sqAns,sqn:sqNext,sdone:sqDone,sre:sqRe,stories:storyList,
- sread(v){const [s,a]=v.split("-").map(Number);story(s,a,()=>storyList())},
+ sread(v){const [s,a]=v.split("-").map(Number);story(s,a,()=>town(s))},f4read(v){floor4(+v,()=>town(+v),"もどる")},f4go(){const f=F4;F4=null;if(f)f()},enter,
  retry(){R.retry&&R.retry()},quit(){const s=G&&G.mode==="dungeon"?G.s:null;G=null;clearBattle();s!=null?town(s):home()},sound(){st.sound=!st.sound;save();home();if(st.sound)sHit(1)}};
 document.addEventListener("click",e=>{const b=e.target.closest("[data-act]");if(!b||b.disabled)return;const f=A[b.dataset.act];if(f){if(b.closest("#nxb"))setBar("");f(b.dataset.v,b)}});
 document.addEventListener("keydown",e=>{if(!G||G.lock||!G.q||e.metaKey||e.ctrlKey||!/^[1-5]$/.test(e.key))return;const b=document.querySelector(`[data-act=ans][data-v="${+e.key-1}"]`);if(b){e.preventDefault();answer(+e.key-1,b)}});
