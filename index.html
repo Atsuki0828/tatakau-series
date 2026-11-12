@@ -129,6 +129,7 @@ body.weakflash{animation:wf .45s}
 .figsvg .fp.on{stroke:#fff}.figsvg .ft.on{fill:#FFD84A}
 .figsvg .on:not(.ft){filter:drop-shadow(0 0 4px #FFD84A)}
 .card .fig{margin-top:6px}
+.flr{border-top:2px dashed #444;padding-top:8px}.flr:first-of-type{border-top:0}
 .figsvg .fch{fill:#cfd3e6;font-size:10.5px;font-family:inherit}.fig.hl .figsvg .fch tspan{fill:#5d6283}.fig.hl .figsvg .fch tspan.on{fill:#FFD84A}
 .ln.old{opacity:.55}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
@@ -812,7 +813,7 @@ function loadGame(k){GM=GAMES[k];({ST,MC,TX,MONS,SP,LEARN,MPMAX,FLOOR,BINX}=GM);
  BIN=ST.map((S,s)=>S.sp&&S.sp.type==="sort"?S.sp:BINX[s]);
  deriveAll();SAVEK=GM.battleKey;
  st={lv:1,exp:0,herb:3,spells:[],known:{},clear:{},perfect:{},miss:[],best:0,zukan:{},sound:true,talked:{},story:{},storyQ:{},cards:{}};
- const s=peek(GM.saveKey);if(s)st=Object.assign(st,s);st.talked=st.talked||{};st.story=st.story||{};st.storyQ=st.storyQ||{};st.cards=st.cards||{};st.spells=st.spells.filter(id=>SP[id]);["clear","perfect","talked"].forEach(f=>Object.keys(st[f]).forEach(s=>{if(+s>=ST.length)delete st[f][s]}));Object.keys(st.zukan).forEach(z=>{if(+z.split("-")[0]>=ST.length)delete st.zukan[z]});
+ const s=peek(GM.saveKey);if(s)st=Object.assign(st,s);st.talked=st.talked||{};st.fl=st.fl||{};st.story=st.story||{};st.storyQ=st.storyQ||{};st.cards=st.cards||{};st.spells=st.spells.filter(id=>SP[id]);["clear","perfect","talked"].forEach(f=>Object.keys(st[f]).forEach(s=>{if(+s>=ST.length)delete st[f][s]}));Object.keys(st.zukan).forEach(z=>{if(+z.split("-")[0]>=ST.length)delete st.zukan[z]});
  if(!meta.mig[k]){const c=Object.keys(st.clear).length,p=Object.keys(st.perfect).length;meta.mig[k]=1;if(c||p){const v=c*300+p*200;meta.stones+=v;MIGMSG=`これまでの クリア ${c}・ノーミス ${p} の ほうびとして 💎${v} を うけとった！`}saveMeta()}
  try{localStorage.setItem("tatakau-series-last",k)}catch(e){}
  document.title=GM.title}
@@ -1652,14 +1653,14 @@ function home(){G=null;SV=null;const cl=Object.keys(st.clear).length;setTimeout(
  show(`<div class="row"><button class="herb" data-act="title">◀ シリーズ</button></div><div class="logo">${GM.logo}<h1>${GM.title}</h1><p class="dim small">${GM.tagline}</p></div>
  ${(()=>{const o=loadBattle();if(!o)return "";const m=o.mons[o.mi];return `<button class="cmd pri" data-act="resume">つづきから<br><span class="small">${esc(o.title)}${o.mode==="dungeon"?`　${o.mi+1}/${o.mons.length}体目`:o.mode==="endless"?`　${o.kills}体 たおした`:""}　HP ${o.hp}${m?`　vs ${esc(m.name)}`:""}</span></button><div class="mt"></div>`})()}<div class="win stat"><span>しずく</span><span>Lv ${st.lv}　HP ${maxHP()}　こうげき ${ATK()}</span><span>つぎのLvまで</span><span>${need()-st.exp}</span><span>じゅもん</span><span>${st.spells.length} / ${SPO.length}　　やくそう 🌿×${st.herb}</span></div>
  ${MIGMSG?`<div class="win mt center y">${MIGMSG}</div>`:""}<div class="grid2 mt"><button class="cmd pri" data-act="gacha">🎰 ガチャ<br><span class="small">💎 ${meta.stones}</span></button><button class="cmd" data-act="gear">🛡 そうび<br><span class="small dim">${Object.values(meta.equip).filter(Boolean).map(id=>GID[id].e).join("")||"なし"}</span></button></div>
- <div class="win mt"><p class="y">ダンジョンを えらぶ　<span class="dim small">クリア ${cl}/${ST.length}</span></p><div class="list mt">${ST.map((S,i)=>`<button class="cmd" data-act="town" data-v="${i}"><span style="float:right">${st.talked[i]?"💬":""}${st.perfect[i]?"🏅":""}${st.clear[i]?"👑":MONS[i][3][0]}</span>${i+1} ${S.n}${S.sub?`<span class="sub">${S.sub}</span>`:""}</button>`).join("")}</div></div>
+ <div class="win mt"><p class="y">ダンジョンを えらぶ　<span class="dim small">クリア ${cl}/${ST.length}</span></p><div class="list mt">${ST.map((S,i)=>`<button class="cmd" data-act="town" data-v="${i}"><span style="float:right">${st.talked[i]?"💬":""}${st.perfect[i]?"🏅":""}${st.clear[i]?"👑":MONS[i][3][0]}</span>${i+1} ${S.n}${!st.clear[i]&&[0,1,2].some(f=>flDone(i,f))?`<span class="sub">フロア ${[0,1,2].filter(f=>flDone(i,f)).length+1}/4 まで すすんだ</span>`:""}${S.sub?`<span class="sub">${S.sub}</span>`:""}</button>`).join("")}</div></div>
  <div class="grid2 mt"><button class="cmd" data-act="endless">れんぞくバトル<br><span class="dim small">最高 ${st.best}体</span></button><button class="cmd" data-act="review">ふくしゅう洞窟<br><span class="dim small">${st.miss.length}問</span></button><button class="cmd" data-act="book">じゅもんの書</button><button class="cmd" data-act="zukan">まもの図鑑</button></div>
  <button class="cmd mt" data-act="sound">おと：${st.sound?"あり":"なし"}</button>
  <p class="dim small mt">${GM.note}</p>`)}
 function town(s){G=null;s=+s;const S=ST[s],n=learn(s),here=LEARN[s]||[];
  show(`<div class="row">${back}<h2 class="y">${s+1} ${S.n}</h2></div>
  ${n.length?`<div class="win mt"><p class="y">${GM.elder}から じゅもんを さずかった！</p>${n.map(id=>`<p class="mt">✨ ${SP[id].n}<br><span class="small dim">${chem(SP[id].d)}</span></p>`).join("")}</div>`:""}
- <div class="win mt"><p class="dim small">${GM.elder}のまとめ</p><ul class="pts">${S.pts.map(p=>`<li>${chem(p)}</li>`).join("")}</ul></div>
+ ${floorsHtml(s)}<div class="win mt"><p class="dim small">${GM.elder}のまとめ</p><ul class="pts">${S.pts.map(p=>`<li>${chem(p)}</li>`).join("")}</ul></div>
  ${vidBox(S)}<div class="win mt"><p class="dim small">たたかいかた</p><ul class="pts small">
  <li><span class="y">たたかう</span>：○×・仕分け（ものがたりの問題も ここで出る）。当てるとMP+1</li>
  <li><span class="y">とくぎ</span>：4〜5択。ダメージ2.5倍・MP+2。外すと敵の行動が一気に早まる</li>
@@ -1667,7 +1668,12 @@ function town(s){G=null;s=+s;const S=ST[s],n=learn(s),here=LEARN[s]||[];
  <li>⏳の横の印が まものの つぎの行動（⚔️こうげき・💢ためこうげき・☠️病態悪化・🌀状態異常）。💢は とくぎ か 弱点じゅもんで くずせる</li>
  <li>ボスの 状態異常は、合う じゅもんか 3問 正解で なおる</li></ul></div>
  <div class="win mt center"><p class="dim small">このダンジョンの まもの</p><p style="font-size:2rem;letter-spacing:10px">${MONS[s].map((m,i)=>st.zukan[s+"-"+i]?m[0]:"❔").join("")}</p>${here.length?"":`<p class="small dim">ここで おぼえる じゅもんは ない</p>`}</div>
- ${loadBattle()?`<p class="small dim mt">※ 中断中のバトルがあります。ここで はいると、そのデータは消えます。</p>`:""}${GM.STORY&&GM.STORY[s]?`<div class="win mt"><p class="dim small">📜 ものがたり（はじめて入ったときは 自動で流れる）</p><div class="list mt">${GM.STORY[s].map((A,a)=>`<button class="cmd" data-act="sread" data-v="${s}-${a}">フロア${a+1}：${chem(A.t)}<span class="sub">${st.story[stKey(s,a)]!==undefined?"読んだ":"まだ"}${st.storyQ[stKey(s,a)]?"　✅ 問題ノーミス":""}</span></button>`).join("")}<button class="cmd" data-act="f4read" data-v="${s}">フロア4：総まとめ と ボス<span class="sub">${st.cards[s]?"🃏 機序カード 入手ずみ":"クリアで 機序カードが 図鑑に入る"}</span></button></div></div>`:S.talk&&S.talk.length?`<button class="cmd mt" data-act="talk" data-v="${s}">💬 会話を もういちど 読む</button>`:""}<button class="cmd pri mt" data-act="enter" data-v="${s}">ダンジョンに はいる</button>`)}
+ ${loadBattle()?`<p class="small dim mt">※ 中断中のバトルがあります。ここで はいると、そのデータは消えます。</p>`:""}`)}
+function floorsHtml(s){const SG=GM.STORY&&GM.STORY[s],S=ST[s];
+ return `<div class="win mt"><p class="y">フロアを えらぶ</p><p class="small dim">「はいる」を押すと、まだ読んでいない フロアは 先に内容が流れる</p>${[0,1,2,3].map(f=>{const op=flOpen(s,f),dn=f===3?!!st.clear[s]:flDone(s,f),rd=SG&&f<3?st.story[stKey(s,f)]!==undefined:f===3?st.story[stKey(s,3)]!==undefined:f===0&&!SG?!!st.talked[s]:null;
+  const read=SG&&f<3?`data-act="sread" data-v="${s}-${f}"`:f===3?`data-act="f4read" data-v="${s}"`:f===0&&S.talk&&S.talk.length?`data-act="talk" data-v="${s}"`:"";
+  return `<div class="flr mt"><p>${dn?"✅":op?"▶":"🔒"} フロア${f+1}：${chem(flName(s,f))}</p><p class="small dim">${f<3?`手下 ${FLOOR_N[f]}体`:`手下 ${FLOOR_N[3]}体＋ボス`}${rd===true?"　📜読んだ":""}${SG&&f<3&&st.storyQ[stKey(s,f)]?"　✅ 問題ノーミス":""}${op?"":"　（フロア"+f+"を クリアすると はいれる）"}</p>
+  <div class="grid2 mt">${read?`<button class="cmd" ${read}>📜 読む</button>`:`<span></span>`}<button class="cmd ${op&&!dn?"pri":""}" data-act="efl" data-v="${s}-${f}" ${op?"":"disabled"}>⚔ はいる</button></div></div>`}).join("")}</div>`}
 function zukan(){show(`<div class="row">${back}<h2 class="y">まもの図鑑</h2></div>${GM.CARD?`<p class="y mt">🃏 機序カード</p>`+Object.keys(GM.CARD).map(s=>st.cards[s]?cardHtml(+s):`<div class="win mt dim small">？？？（${+s+1} ${ST[s].n}を クリアすると てにはいる）</div>`).join(""):""}
  ${ST.map((S,s)=>`<p class="mt small dim">${s+1} ${S.n}</p><div class="zk">${MONS[s].map((m,i)=>{const n=st.zukan[s+"-"+i];return `<div class="${n?"":"no"}"><span>${m[0]}</span>${n?m[1]+"<br>×"+n:"？？？"}</div>`}).join("")}</div>`).join("")}`)}
 function book(){const where=id=>{for(const k in LEARN)if(LEARN[k].includes(id))return +k};
@@ -1677,10 +1683,10 @@ function book(){const where=id=>{for(const k in LEARN)if(LEARN[k].includes(id))r
 /* ============ バトル ============ */
 let SAVEK="";
 function fnsFor(mode,s){
- if(mode==="dungeon"){const prev=[].concat(...BQ.slice(0,s)),mine=()=>BQ[s].concat(WQ[s]);return{refill:()=>shuffle(POOL[s]),bqRefill:()=>shuffle(mine().concat(prev)),edmg:m=>maxHP()*(m.boss?.3:.22)*Math.min(1.4,Math.max(.6,1+(s-(st.lv-1))*.06)),retry:()=>dungeon(s)}}
+ if(mode==="dungeon"){const prev=[].concat(...BQ.slice(0,s)),mine=()=>BQ[s].concat(WQ[s]);return{refill:()=>shuffle(POOL[s]),bqRefill:()=>shuffle(mine().concat(prev)),edmg:m=>maxHP()*(m.boss?.3:.22)*Math.min(1.4,Math.max(.6,1+(s-(st.lv-1))*.06)),retry:()=>R&&R.fl!=null?floorBattle(s,R.fl):dungeon(s)}}
  if(mode==="endless"){const all=()=>shuffle([].concat(...POOL)),bqA=()=>shuffle([].concat(...BQ).concat([].concat(...WQ).filter(k=>{const[a,i]=k.slice(2).split("-").map(Number);return st.spells.includes(bestOf(mon(a,i)))})));return{refill:all,bqRefill:bqA,edmg:m=>maxHP()*((m.boss?.26:.18)+G.kills*.012),retry:endless}}
  return{refill:()=>shuffle(st.miss.filter(k=>qOf(k))),bqRefill:()=>[],edmg:()=>maxHP()*.12,retry:review}}
-const DATAK=["mode","s","title","hp","mp","mi","combo","miss","missN","kills","lv0","pool","bq","mons","shield","sts","stsN","pd","ya"];
+const DATAK=["mode","s","title","hp","mp","mi","combo","miss","missN","kills","lv0","pool","bq","mons","shield","sts","stsN","pd","ya","fl"];
 function saveBattle(){if(!G)return;const o={};DATAK.forEach(k=>o[k]=G[k]);try{localStorage.setItem(SAVEK,JSON.stringify(o))}catch(e){}}
 function clearBattle(){try{localStorage.removeItem(SAVEK)}catch(e){}}
 function loadBattle(){try{const o=JSON.parse(localStorage.getItem(SAVEK));return o&&o.mons&&o.mons.length?o:null}catch(e){return null}}
@@ -1692,6 +1698,17 @@ function startBattle(o){const B=GB();G=Object.assign({hp:maxHP(),mp:o.mode=="rev
 // ダンジョンの構成：フロアごとの手下の数（フロア4はこのあとボス）
 const FLOOR_N=[3,3,3,2],MINION_HITS=2,BOSS_HITS=6;
 const flOf=(g,i)=>{const m=g.mons[i];return m?(m.fl!=null?m.fl:(m.boss?3:Math.min(i,2))):-1};
+const flKey=(s,f)=>s+"-"+f,flDone=(s,f)=>!!(st.fl&&st.fl[flKey(s,f)]),flOpen=(s,f)=>f===0||!!st.clear[s]||flDone(s,f-1);
+const flName=(s,f)=>{const A=GM.STORY&&GM.STORY[s]&&GM.STORY[s][f];return f===3?"総まとめ と ボス（"+(ST[s].boss||MONS[s][3][1])+"）":A?A.t:"手下の むれ"};
+function enterFloor(v){const [s,f]=String(v).split("-").map(Number);if(!flOpen(s,f))return;const go=()=>floorBattle(s,f),S=ST[s],SG=GM.STORY&&GM.STORY[s];
+ if(f<3&&SG&&SG[f]&&st.story[stKey(s,f)]===undefined)return story(s,f,go,"たたかいへ");
+ if(f===0&&!SG&&S.talk&&S.talk.length&&!st.talked[s]){G=null;TK={s,i:0,after:go};return talkShow()}
+ if(f===3&&st.story[stKey(s,3)]===undefined)return floor4(s,go);
+ go()}
+function floorBattle(s,f){s=+s;f=+f;learn(s);const prev=[].concat(...BQ.slice(0,s)),mine=()=>BQ[s].concat(WQ[s]);
+ const yk=yKeys(s,f<3?[f]:[0,1,2]),base=shuffle(POOL[s]),pool=f<3?shuffle(yk).concat(base):shuffle(yk.concat(base.splice(0,yk.length))).concat(base);
+ const mins=shuffle([0,1,2]).concat(shuffle([0,1,2])).slice(0,FLOOR_N[f]).map(i=>Object.assign(mon(s,i),{hits:MINION_HITS,fl:f}));
+ startBattle({mode:"dungeon",s,fl:f,pd:{[f]:1},title:`${ST[s].n}`,pool,bq:shuffle(mine()).concat(shuffle(prev)),mons:f===3?mins.concat([Object.assign(mon(s,3),{hits:BOSS_HITS,fl:3})]):mins})}
 function enter(s){s=+s;const S=ST[s];if(!(GM.STORY&&GM.STORY[s])&&S.talk&&S.talk.length&&!st.talked[s]){G=null;TK={s,i:0,after:()=>dungeon(s)};return talkShow()}dungeon(s)}
 function dungeon(s){s=+s;learn(s);const prev=[].concat(...BQ.slice(0,s)),mine=()=>BQ[s].concat(WQ[s]);
  startBattle({mode:"dungeon",s,title:ST[s].n,pool:shuffle(POOL[s]),bq:shuffle(mine()).concat(shuffle(prev)),
@@ -1805,7 +1822,9 @@ function next(){const g=G;if(!g||!g.fb)return;if(g.hp<=0)return finish(false);
  if(g.mon.hp<=0){const fl=g.mode==="dungeon"?flOf(g,g.mi):-1;if(fl>=0&&fl<3&&flOf(g,g.mi+1)!==fl){const e=g.ya&&g.ya[fl],k=stKey(g.s,fl);if(e&&e.n&&!e.bad&&!st.storyQ[k]){st.storyQ[k]=1;const got=addStones(100);if(got)g.note=`📜 ものがたりの問題を ノーミス！ 💎+${got}`}}g.mi++;if(g.mode!=="endless"&&g.mi>=g.mons.length)return finish(true);
   return encounter()}menu()}
 function finish(win){const g=G;G=null;clearBattle();R=g;let head,body="",stones=0,extra="";
- if(g.mode==="dungeon"){if(win){const first=!st.clear[g.s],fp=!g.missN&&!st.perfect[g.s];st.clear[g.s]=1;st.herb++;if(!g.missN)st.perfect[g.s]=1;
+ if(g.mode==="dungeon"&&g.fl!=null&&g.fl<3){if(win){const k=flKey(g.s,g.fl),first=!st.fl[k];st.fl[k]=1;stones=first?50:10;head=`フロア${g.fl+1}を クリアした！`;
+   body=`<p class="small dim">${chem(ST[g.s].n)}　フロア${g.fl+1}：${chem(flName(g.s,g.fl))}</p><p class="mt">フロア${g.fl+2}「${chem(flName(g.s,g.fl+1))}」に はいれるように なった</p>`}else head="ぜんめつ した…"}
+ else if(g.mode==="dungeon"){if(win){if(g.fl!=null)st.fl[flKey(g.s,3)]=1;const first=!st.clear[g.s],fp=!g.missN&&!st.perfect[g.s];st.clear[g.s]=1;st.herb++;if(!g.missN)st.perfect[g.s]=1;
    stones=(first?300:30)+(fp?200:0);head=`${g.title}を クリアした！`;
    body=`<p>やくそうを 1つ てにいれた！</p>${g.missN?`<p class="dim small">ノーミス（じゅもんの えらびまちがいも なし）で 🏅</p>`:'<p class="y">ノーミス！ 🏅 を てにいれた！</p>'}`;
    if(GM.CARD&&GM.CARD[g.s]&&!st.cards[g.s]){st.cards[g.s]=1;extra+=`<p class="lv mt">🃏 機序カード「${chem(GM.CARD[g.s].t)}」を てにいれた！</p>`}}
@@ -1813,8 +1832,8 @@ function finish(win){const g=G;G=null;clearBattle();R=g;let head,body="",stones=
  else if(g.mode==="endless"){const nb=g.kills>st.best;if(nb)st.best=g.kills;head=`${g.kills}体 たおした！`;body=nb?'<p class="y">さいこうきろく こうしん！</p>':`<p class="dim">さいこうきろく ${st.best}体</p>`;win=nb&&g.kills>0}
  else{head=win?"わすれんぼうを たおした！":"わすれんぼうに やられた…";if(win)stones=50;body=`<p>洞窟に のこる問題：${st.miss.length}問</p>`}
  save();const got=addStones(stones);if(win)sWin();
- const nextBtn=win&&g.mode==="dungeon"&&g.s<ST.length-1?`<button class="cmd pri mt" data-act="town" data-v="${g.s+1}">つぎのダンジョン：${ST[g.s+1].n}</button>`:"";
- show(`<div class="win center mt"><p style="font-size:3.4rem;line-height:1.3">${win?(g.mode==="dungeon"?"👑":"🎉"):"💧"}</p><p class="big">${head}</p>${body}${got?`<p class="y big mt">💎 ${STONE} +${got}</p><p class="small dim">いま ${meta.stones}　（ガチャ 1回 100）</p>`:""}${extra}<p class="mt">Lv ${g.lv0}${st.lv>g.lv0?` → <span class="y">Lv ${st.lv}</span>`:""}　たおした数 ${g.kills}　ミス ${g.missN}</p></div>
+ const nextBtn=win&&g.mode==="dungeon"&&g.fl!=null&&g.fl<3?`<button class="cmd pri mt" data-act="efl" data-v="${g.s}-${g.fl+1}">つぎへ：フロア${g.fl+2} ${chem(flName(g.s,g.fl+1))}</button>`:win&&g.mode==="dungeon"&&g.s<ST.length-1?`<button class="cmd pri mt" data-act="town" data-v="${g.s+1}">つぎのダンジョン：${ST[g.s+1].n}</button>`:"";
+ show(`<div class="win center mt"><p style="font-size:3.4rem;line-height:1.3">${win?(g.mode==="dungeon"?"👑":"🎉"):"💧"}</p><p class="big">${head}</p>${g.note?`<p class="y mt">${g.note}</p>`:""}${body}${got?`<p class="y big mt">💎 ${STONE} +${got}</p><p class="small dim">いま ${meta.stones}　（ガチャ 1回 100）</p>`:""}${extra}<p class="mt">Lv ${g.lv0}${st.lv>g.lv0?` → <span class="y">Lv ${st.lv}</span>`:""}　たおした数 ${g.kills}　ミス ${g.missN}</p></div>
  ${g.miss.length?`<div class="win mt"><p class="y">まちがえた ところ</p><ul class="miss">${g.miss.map(m=>`<li><b>${chem(m.t)}</b>${chem(m.ex).replace(/\n/g,"<br>")}</li>`).join("")}</ul></div>`:""}
  ${meta.stones>=100?`<button class="cmd mt" data-act="gacha">🎰 ガチャを ひく（💎${meta.stones}）</button>`:""}
  ${nextBtn}<button class="cmd mt ${nextBtn?"":"pri"}" data-act="retry">もういちど たたかう</button><button class="cmd mt" data-act="home">まちへ もどる</button>`)}
@@ -1822,7 +1841,7 @@ function finish(win){const g=G;G=null;clearBattle();R=g;let head,body="",stones=
 const A={resume,home,town,talk,tnext:talkNext,tskip:talkSkip,title,pick,zukan,book,dungeon,endless,review,menu,spells,cast,ans:answer,next,herb:useHerb,atk:()=>ask("atk"),skill:()=>ask("skill"),
  gacha,pull,pullshow:pullShow,gear:gearScr,equip,unequip,enh,
  snext:storyNext,sskip:storySkip,sqa:sqAns,sqn:sqNext,sdone:sqDone,sre:sqRe,stories:storyList,
- sread(v){const [s,a]=v.split("-").map(Number);story(s,a,()=>town(s))},f4read(v){floor4(+v,()=>town(+v),"もどる")},f4go(){const f=F4;F4=null;if(f)f()},enter,
+ sread(v){const [s,a]=v.split("-").map(Number);story(s,a,()=>town(s))},f4read(v){floor4(+v,()=>town(+v),"もどる")},f4go(){const f=F4;F4=null;if(f)f()},enter,efl:enterFloor,
  retry(){R.retry&&R.retry()},quit(){const s=G&&G.mode==="dungeon"?G.s:null;G=null;clearBattle();s!=null?town(s):home()},sound(){st.sound=!st.sound;save();home();if(st.sound)sHit(1)}};
 document.addEventListener("click",e=>{const b=e.target.closest("[data-act]");if(!b||b.disabled)return;const f=A[b.dataset.act];if(f){if(b.closest("#nxb"))setBar("");f(b.dataset.v,b)}});
 document.addEventListener("keydown",e=>{if(!G||G.lock||!G.q||e.metaKey||e.ctrlKey||!/^[1-5]$/.test(e.key))return;const b=document.querySelector(`[data-act=ans][data-v="${+e.key-1}"]`);if(b){e.preventDefault();answer(+e.key-1,b)}});
