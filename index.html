@@ -1662,8 +1662,8 @@ function town(s){G=null;s=+s;const S=ST[s],n=learn(s),here=LEARN[s]||[];
  ${n.length?`<div class="win mt"><p class="y">${GM.elder}から じゅもんを さずかった！</p>${n.map(id=>`<p class="mt">✨ ${SP[id].n}<br><span class="small dim">${chem(SP[id].d)}</span></p>`).join("")}</div>`:""}
  ${floorsHtml(s)}<div class="win mt"><p class="dim small">${GM.elder}のまとめ</p><ul class="pts">${S.pts.map(p=>`<li>${chem(p)}</li>`).join("")}</ul></div>
  ${vidBox(S)}<div class="win mt"><p class="dim small">たたかいかた</p><ul class="pts small">
- <li><span class="y">たたかう</span>：○×・仕分け（ものがたりの問題も ここで出る）。当てるとMP+1</li>
- <li><span class="y">とくぎ</span>：4〜5択。ダメージ2.5倍・MP+2。外すと敵の行動が一気に早まる</li>
+ <li><span class="y">たたかう</span>：○×・仕分け（ものがたりの問題も ここで出る）。当てると MP+1 と 💪ちから+1（かいしんなら💪+2）</li>
+ <li><span class="y">とくぎ</span>：💪を2つ使う 4〜5択。ダメージ2.5倍。外すと敵の行動が一気に早まる（💪は もどらない）</li>
  <li><span class="y">じゅもん</span>：MPを使う。まものの「🔍」を読み、病態に合う薬やホルモンを選ぶ。いちばん効くものなら大ダメージ＋<span class="y">もう一度 うごける</span>。まちがえると効かない、ときには逆効果</li>
  <li>⏳の横の印が まものの つぎの行動（⚔️こうげき・💢ためこうげき・☠️病態悪化・🌀状態異常）。💢は とくぎ か 弱点じゅもんで くずせる</li>
  <li>ボスの 状態異常は、合う じゅもんか 3問 正解で なおる</li></ul></div>
@@ -1686,15 +1686,17 @@ function fnsFor(mode,s){
  if(mode==="dungeon"){const prev=[].concat(...BQ.slice(0,s)),mine=()=>BQ[s].concat(WQ[s]);return{refill:()=>shuffle(POOL[s]),bqRefill:()=>shuffle(mine().concat(prev)),edmg:m=>maxHP()*(m.boss?.3:.22)*Math.min(1.4,Math.max(.6,1+(s-(st.lv-1))*.06)),retry:()=>R&&R.fl!=null?floorBattle(s,R.fl):dungeon(s)}}
  if(mode==="endless"){const all=()=>shuffle([].concat(...POOL)),bqA=()=>shuffle([].concat(...BQ).concat([].concat(...WQ).filter(k=>{const[a,i]=k.slice(2).split("-").map(Number);return st.spells.includes(bestOf(mon(a,i)))})));return{refill:all,bqRefill:bqA,edmg:m=>maxHP()*((m.boss?.26:.18)+G.kills*.012),retry:endless}}
  return{refill:()=>shuffle(st.miss.filter(k=>qOf(k))),bqRefill:()=>[],edmg:()=>maxHP()*.12,retry:review}}
-const DATAK=["mode","s","title","hp","mp","mi","combo","miss","missN","kills","lv0","pool","bq","mons","shield","sts","stsN","pd","ya","fl"];
+const DATAK=["mode","s","title","hp","mp","mi","combo","miss","missN","kills","lv0","pool","bq","mons","shield","sts","stsN","pd","ya","fl","pw"];
 function saveBattle(){if(!G)return;const o={};DATAK.forEach(k=>o[k]=G[k]);try{localStorage.setItem(SAVEK,JSON.stringify(o))}catch(e){}}
 function clearBattle(){try{localStorage.removeItem(SAVEK)}catch(e){}}
 function loadBattle(){try{const o=JSON.parse(localStorage.getItem(SAVEK));return o&&o.mons&&o.mons.length?o:null}catch(e){return null}}
-function resume(){const o=loadBattle();if(!o)return home();G=Object.assign({lock:false,fb:false,shield:0,sts:null,stsN:0},o,fnsFor(o.mode,o.s));G.mon=G.mons[G.mi];
+function resume(){const o=loadBattle();if(!o)return home();G=Object.assign({lock:false,fb:false,shield:0,sts:null,stsN:0,pw:0},o,fnsFor(o.mode,o.s));G.mon=G.mons[G.mi];
  if(G.sts&&!(GM.STS&&GM.STS[G.sts]))G.sts=null;
  if(G.mon&&typeof G.mon.hp!=="number"&&G.hp>0)return encounter();
  if(!G.mon||G.hp<=0||G.mon.hp<=0){G.fb=true;return next()}G.msg="つづきから 再開した！";sEnc();menu()}
-function startBattle(o){const B=GB();G=Object.assign({hp:maxHP(),mp:o.mode=="review"?0:Math.min(mpMax(),3+B.mpstart),mi:0,combo:0,miss:[],missN:0,kills:0,lv0:st.lv,lock:false,fb:false,shield:B.guard,sts:null,stsN:0},o,fnsFor(o.mode,o.s));encounter()}
+function startBattle(o){const B=GB();G=Object.assign({hp:maxHP(),mp:o.mode=="review"?0:Math.min(mpMax(),3+B.mpstart),mi:0,combo:0,pw:0,miss:[],missN:0,kills:0,lv0:st.lv,lock:false,fb:false,shield:B.guard,sts:null,stsN:0},o,fnsFor(o.mode,o.s));encounter()}
+// ちから：たたかうの正解でたまり、とくぎで使う
+const PW_COST=2,PW_MAX=6,PW_GAIN=1,PW_CRIT=2;
 // ダンジョンの構成：フロアごとの手下の数（フロア4はこのあとボス）
 const FLOOR_N=[3,3,3,2],MINION_HITS=2,BOSS_HITS=6;
 const flOf=(g,i)=>{const m=g.mons[i];return m?(m.fl!=null?m.fl:(m.boss?3:Math.min(i,2))):-1};
@@ -1742,17 +1744,17 @@ function updHud(){if(!G||!G.mon)return;const g=G,mx=maxHP(),m=g.mon,b=document.g
 function menu(){const g=G,m=g.mon,rv=g.mode==="review",S=stsDef();g.lock=false;g.fb=false;g.q=null;if(!m.intent)m.intent=pickIntent(m);saveBattle();const it=intentTxt(m);
  frame(`<div class="win q">${g.msg?`<span class="tag y">${g.msg}</span>`:""}${m.desc?`<p class="small">🔍 ${chem(m.desc)}</p>`:""}
  <p class="small ${m.cd<=1?"ng":"dim"}">${m.cd<=1?`⚠ つぎの ターン：${m.name}の ${it[1]}！`:`${m.name}の つぎの行動：${it[0]} ${it[1]}（あと ${m.cd}ターン）`}</p>
- ${m.intent==="big"?'<p class="small y">💡 とくぎ か、弱点の じゅもんを 当てると「ため」を くずせる</p>':""}
+ ${m.intent==="big"?`<p class="small y">💡 とくぎ（💪${PW_COST}）か、弱点の じゅもんを 当てると「ため」を くずせる</p>`:""}
  ${S?`<p class="small ng">${S.ic} ${S.n}：${S.fxt}。${Object.keys(S.cure).map(k=>SP[k]?SP[k].n:k).join("・")}を となえるか、${3-g.stsN}問 正解すると なおる</p>`:""}</div>
  <div class="cmds">
- <button class="cmd" data-act="atk"><b>たたかう</b><span class="sub">○×・仕分け／ダメージ×1・MP+1</span></button>
- ${rv?"":`<button class="cmd" data-act="skill"><b>とくぎ</b><span class="sub">4〜5択／ダメージ×2.5・MP+2／外すと反撃が早まる</span></button>
+ <button class="cmd" data-act="atk"><b>たたかう</b><span class="sub">○×・仕分け／×1・MP+1・💪+1（かいしん💪+2）</span></button>
+ ${rv?"":`<button class="cmd" data-act="skill" ${(g.pw||0)>=PW_COST?"":"disabled"}><b>とくぎ　<span class="${(g.pw||0)>=PW_COST?"y":"dim"}">💪${g.pw||0}</span></b><span class="sub">${(g.pw||0)>=PW_COST?`💪${PW_COST}使う／4〜5択・×2.5／外すと反撃が早まる`:`たたかうで 💪を ${PW_COST}つ ためると 使える`}</span></button>
  <button class="cmd" data-act="spells" ${spellList(m).length?"":"disabled"}><b>じゅもん</b><span class="sub">${spellList(m).length?"弱点を つけば、もう一度 うごける":"まだ おぼえていない"}</span></button>`}
  <button class="cmd" data-act="herb" ${st.herb&&g.hp<maxHP()?"":"disabled"}><b>やくそう ×${st.herb}</b><span class="sub">HPを半分かいふく／1ターン使う</span></button></div>`);g.msg=""}
 function spells(){const g=G,m=g.mon,L=spellList(m),ok=L.filter(id=>g.mp>=SP[id].mp),ng=L.filter(id=>g.mp<SP[id].mp);
  frame(`<div class="win q"><span class="tag y">どの じゅもんを となえる？　MP ${g.mp}</span>${m.desc?`<p class="small">🔍 ${chem(m.desc)}</p>`:`<p class="small dim">とくべつな 病態は なさそうだ。じゅもんは ふつうの ダメージになる。</p>`}${stsDef()?`<p class="small ng">${stsDef().ic} ${stsDef().n}を なおせる じゅもんも ある</p>`:""}</div>
  <div class="list mt"><button class="cmd" data-act="menu">もどる</button>${ok.concat(ng).map(id=>{const p=SP[id];return `<button class="cmd" data-act="cast" data-v="${id}" ${g.mp<p.mp?"disabled":""}><b>${p.n}<span class="y" style="float:right">MP${p.mp}</span></b><span class="sub">${chem(p.d)}</span></button>`}).join("")}</div>`)}
-function ask(t){const g=G,src=t==="skill"?"bq":"pool";let q=null;
+function ask(t){const g=G;if(t==="skill"){if(g.mode==="review"||(g.pw||0)<PW_COST)return;g.pw-=PW_COST}const src=t==="skill"?"bq":"pool";let q=null;
  for(let n=0;n<400&&!q;n++){if(!g[src].length)g[src]=t==="skill"?g.bqRefill():g.refill();if(!g[src].length)return ask("atk");q=qOf(g[src].shift())}
  g.q=q;g.qt=t;g.src=src;g.lock=false;g.t0=Date.now();const tm=q.time*(1+GB().time);g.qtime=tm;
  frame(`<div class="win q"><span class="tag">${t==="skill"?"とくぎ":"たたかう"}：${chem(q.tag)}${g.combo>=2?`　<span class="y">${g.combo}れんぞく！</span>`:""}</span><p>${chem(q.q)}</p></div>
@@ -1794,9 +1796,9 @@ function answer(v,btn){const g=G;if(!g||g.lock||!g.q)return;g.lock=true;v=+v;con
  let L="";
  if(right){g.combo++;const B=GB(),cb=Math.min(g.combo-1,5),gm=1+Math.min(.5,B.atk+(sk?B.skill:0)+cb*B.combo+(fast?B.crit:0));
   const d=Math.max(1,Math.round(ATK()*(sk?2.5:1)*(fast?1.6:1)*(1+cb*.08)*gm*stsAtk()*rnd(.9,1.1)));
-  const S=stsDef(),mg=Math.max(0,(sk?2:1)-(S&&S.fx==="mpdown"?1:0));g.mp=Math.min(mpMax(),g.mp+mg);sHit(fast);
+  const S=stsDef(),mg=Math.max(0,(sk?0:1)-(S&&S.fx==="mpdown"?1:0));g.mp=Math.min(mpMax(),g.mp+mg);const pg=sk?0:Math.min(PW_MAX-(g.pw||0),fast?PW_CRIT:PW_GAIN);g.pw=(g.pw||0)+pg;sHit(fast);
   if(g.mode==="review")delMiss(q.k);
-  L+=`<p>しずくの ${sk?"とくぎ！":"こうげき！"}　<span class="mp">MP+${mg}</span></p>${fast?'<p class="crit">かいしんの いちげき！</p>':""}`+hitMon(d);
+  L+=`<p>しずくの ${sk?"とくぎ！":"こうげき！"}${sk?"":`　<span class="mp">MP+${mg}</span>${pg?`　<span class="y">💪+${pg}</span>`:""}`}</p>${fast?'<p class="crit">かいしんの いちげき！</p>':""}`+hitMon(d);
   if(sk)L+=breakCharge();L+=stsStep()}
  else{g.combo=0;g.missN++;sNg();addMiss(q.k);if(!g.miss.some(x=>x.k===q.k))g.miss.push({k:q.k,t:q.q+"　→ "+q.ch[q.a],ex:q.ex(q.a)});const s=g[g.src];s.splice(Math.min(2,s.length),0,q.k);
   L+=`<p class="ng">ミス！ こうげきは はずれた…</p>${sk?`<p class="ng">すきを つかれた！ ${m.name}の こうげきが はやまった！</p>`:""}`}
