@@ -36,7 +36,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 .list{display:grid;gap:8px}
 .row{display:flex;gap:8px;align-items:center}.sp{flex:1}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.pts{margin:6px 0 0;padding-left:1.1em}.pts li{margin:.35em 0}
+.pts{margin:6px 0 0;padding-left:1.1em}.pts li{margin:.35em 0}.note .pts li{line-height:1.6}.memo{width:100%;box-sizing:border-box;background:#0d0d24;color:#fff;border:2px solid #fff;border-radius:6px;padding:8px;font:inherit;font-size:.95rem}.lnk{color:#7FE7F2}.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}.grid3 .cmd{text-align:center;padding:10px 4px}
 /* battle */
 .hud{display:flex;gap:10px;align-items:center;padding:8px 12px}
 .hud .bar{flex:1}
@@ -2364,6 +2364,74 @@ stgP({n:"寄生虫の総まとめ",ic:"📖",boss:"きせいちゅうずかん",
   {q:"疥癬の原因となる外部寄生虫はどれか。",a:1,o:[["トコジラミ","吸血・皮疹"],["ヒゼンダニ","疥癬トンネル"],["ノミ","外部寄生虫の一つ"],["シラミ","外部寄生虫の一つ"]]},
   {q:"淡水で泳いで感染する寄生虫として正しいものはどれか。",a:2,o:[["回虫","経口感染"],["アニサキス","生食"],["住血吸虫類","経皮感染"],["エキノコッカス","虫卵の経口摂取"]]}],
  tx:[["マラリア原虫は、赤血球に寄生する",1,"赤血球にはMHCがない"],["マラリアとエキノコッカス症は、感染症法で4類である",1,"動物由来感染症"],["トキソプラズマは、先天性感染症の原因になりうる",1,"垂直感染"],["アニサキスは、日本でもっとも身近な寄生虫症のひとつである",1,"生食に注意"],["ヒト回虫は、経口感染しない",0,"有機野菜などから経口感染"],["オンコセルカ症は、蚊が媒介する",0,"ブユ"],["シャーガス病は、サシガメが媒介する",1,"シャーガストリパノソーマ"],["ヒゼンダニは、皮膚の中で疥癬トンネルをつくる",1,"経皮感染"],["トコジラミは、皮膚に侵入して疥癬を起こす",0,"吸血して皮疹を起こす"],["川や淡水で泳ぐことは、住血吸虫の感染リスクになる",1,"経皮感染"]]});
+/* ---- 講義ノート（講義資料の順にまとめたもの。出典ページつき） ---- */
+const PAR_SRC={sou:"https://drive.google.com/file/d/1b8_QoO4vfCsGi25Dy0hp9p88S1BqInpk/view",sou_t:"医動物学総論スライド（奥野）",
+ kyu:"https://drive.google.com/file/d/11rClGFsgu5cfOeOIZtHHLR--YSNjwNki/view",kyu_t:"吸虫・条虫スライド（改正）",
+ qz:"https://drive.google.com/file/d/1wInkOQmDn_jBeGRCxB9iw4hG-gnjCylQ/view",ad:"https://drive.google.com/file/d/1JHu_hV8tIJd1pLlrP1Szt_0aEyMquYX4/view"};
+PAR.NOTE={
+0:[{t:"医動物と寄生虫の分類",src:PAR_SRC.sou_t+" p.2・9〜16",url:PAR_SRC.sou,sec:[
+  ["医動物学は どんな場面で役立つか",["頻度はそこまで高くないが、「特別な状況」で起こる感染症という立ち位置","マラリア原虫：赤血球に感染する虫","猫の糞・庭いじり → トキソプラズマ（先天性感染症）","魚の生食 → アニサキス","川魚（淡水魚）やサワガニの生食 → 吸虫・条虫","不衛生（糞便・土・有機野菜） → 回虫","キツネ・イヌ（北海道だけでなく愛知も） → エキノコッカス類（致死的）","性交渉（MSMを含む） → 赤痢アメーバ・膣トリコモナス","川（淡水）で泳ぐ → 住血吸虫類（経皮感染）"],"p.2"],
+  ["人類への影響と、最低限おさえる寄生虫",["世界的には マラリアの影響が非常に大きく、ほかは頻度や地域が限られる","日本では マラリアは まれな輸入感染症。アニサキスは比較的よく見るが、生命・機能予後への影響は小さい","最低限：マラリアとアニサキス。次に トキソプラズマ・赤痢アメーバ"],"p.9"],
+  ["用語：医動物・寄生虫・疾病媒介動物",["医学では「動物」に虫などの生物も含める","寄生虫＝体内・体外に寄生する病原体。体内＝内部寄生虫、皮膚に寄生するもの＝外部寄生虫","疾病媒介動物＝病原体や毒素を媒介する動物（マラリアを運ぶ蚊／毒蜘蛛・毒蛾・サソリなど）","狭義の医動物＝寄生虫、広義＝寄生虫＋疾病媒介動物。医動物学で学ぶのは ほぼ狭義"],"p.13"],
+  ["分類の木（ここを覚える）",["内部寄生虫 ─ 原虫（単細胞）：マラリア・トキソプラズマ","内部寄生虫 ─ 蠕虫（多細胞）：吸虫（横川吸虫・日本住血吸虫）・条虫（日本海裂頭条虫）・線虫（アニサキス）","外部寄生虫：ヒゼンダニ・シラミ・ノミ","疾病媒介動物：蚊・サソリ・毒蜘蛛など"],"p.14"],
+  ["ほかの病原体とくらべる",["ウイルス：核膜も細胞壁もなく、自分で複製できない（生物ではない）","細菌：単細胞・核膜なし（原核生物）・細胞壁あり → 抗菌薬","真菌：核膜あり（真核生物）・細胞壁あり → 抗真菌薬","原虫：単細胞・核膜あり・細胞壁なし・生活史あり → 抗原虫薬","蠕虫：多細胞・核膜あり・細胞壁なし・生活史あり → 抗蠕虫薬（駆虫薬）","外部寄生虫：多細胞・体内に移行しない → 殺虫剤","寄生虫の特徴は「生活史」＝栄養があれば分裂するだけ、ではない複雑な発育過程をもつこと","原虫は微生物だが、便宜上 医動物学（寄生虫学）で扱う"],"p.15〜16"],
+  ["（参考）単位取得の注意",["講義は5コマ → 7割を満たすには4コマ出席が必要","演習（アクティブラーニング）は参加必須","試験はウイルス学と同時に行う","再試験の対象になったら、必ず一度 個別相談に行く"],"p.10"]]},
+ {t:"原虫と蠕虫の特徴",src:PAR_SRC.sou_t+" p.17〜21",url:PAR_SRC.sou,sec:[
+  ["原虫",["単細胞（定義上）。無性生殖するものと有性生殖するものがある","状況に応じて さまざまな形をとって発育する＝生活史（細菌・真菌との大きな違い）","活発に運動・分裂する時期＝栄養型（trophozoite）","環境が悪くなると被嚢して シスト（嚢子、cyst）をつくることが多い","特に勉強する原虫：マラリア原虫・トキソプラズマ・赤痢アメーバ"],"p.17"],
+  ["生活史の例：三日熱マラリア原虫",["単細胞なのに、形を変えながら特別な一生（生活史）を送る点を確認する","詳しくは各論（マラリア）で"],"p.18"],
+  ["蠕虫",["吸虫：組織に吸い付く。葉っぱ・ヒル（蛭）のようなイメージ","条虫：きしめん状（さなだむし、Tapeworm）。消化管内・組織内を移動","線虫：ひも状。消化管内・組織内を移動","多細胞。有性生殖（雌雄同体のものもある）。卵→幼虫→成虫と変態して発育","消化器・生殖器は進化し、運動器・感覚器は退化した（奇妙な見た目の理由）","常に免疫系の攻撃にさらされる生活史 → 免疫回避のしくみをもつ"],"p.19"],
+  ["（参考）生殖方法　※覚えなくてよい",["無性生殖（原虫のみ）：二分裂／多数分裂（マラリア）／内出芽二分裂（トキソプラズマ）","有性生殖：両性生殖（雌雄同体も）／接合／単為生殖／幼生生殖","1種類の寄生虫が2つ以上の方法をもつこともある"],"p.20"],
+  ["外部寄生虫",["主に皮膚に寄生する虫（ダニ・シラミ・ノミ）","例：ヒゼンダニ（疥癬の原因）。環境中から皮膚に侵入し、皮膚の中を移動して皮疹（疥癬トンネル）をつくり、皮膚に産卵する"],"p.21"]]},
+ {t:"宿主と防御・回避",src:PAR_SRC.sou_t+" p.22〜23",url:PAR_SRC.sou,sec:[
+  ["宿主と媒介動物（この言葉を覚える）",["固有宿主（終宿主）：寄生虫が有性生殖を営める宿主。ヒトのことも ほかの動物のこともある","中間宿主：固有宿主以外で、発育に必要な宿主。第1・第2中間宿主…と複数いることも。固有宿主の餌だったり、固有宿主を襲う媒介動物だったりする","媒介動物：何らかの方法で寄生虫をヒトに伝播させる動物","機械的媒介（物理的に運ぶ）：ハエ・ゴキブリ","生物学的媒介（刺して投入する）：蚊・ダニ"],"p.22"],
+  ["宿主の防御反応",["安全な行動：流行地に近寄らない・媒介動物の対策・生食しない","皮膚・粘膜のバリア（ただし経皮感染するものもいる）","自然免疫：好酸球・肥満細胞（IgE-FcR）・マクロファージが中心","獲得免疫：Th2反応（Th2サイトカイン、IgEを含む抗体の産生）","→ 好酸球とIgEは Ⅰ型（即時型）アレルギー反応にもかかわる"],"p.23"],
+  ["寄生虫の免疫回避機構",["細胞内への侵入：トキソプラズマ","表面抗原の変異（攻撃を受けると抗原を変える）：トリパノソーマ","赤血球への侵入：マラリア（赤血球には MHC が発現していない）","一般に、寄生虫は免疫で排除されにくい（だから今も生き延びている）"],"p.23"]]}],
+1:[{t:"寄生虫の感染経路",src:PAR_SRC.sou_t+" p.24〜25",url:PAR_SRC.sou,sec:[
+  ["ウイルスの8つの経路とくらべる",["大気経由：飛沫感染・飛沫核（空気）感染 → 寄生虫では ない","接触感染 → 多い","経口感染 → 非常に多い。食物や環境（水・土など）から虫体・虫卵（嚢子）を取りこむ","血液感染 → ある。原虫（マラリア・トリパノソーマ・トキソプラズマなど）","動物媒介感染 → 非常に多い。蚊（マラリア）・サシガメ（トリパノソーマ）","垂直感染（母子感染） → ある。トキソプラズマ → 先天性トキソプラズマ症","性的接触 → ある。膣トリコモナス・赤痢アメーバ（MSMと関連）"],"p.24〜25"]]},
+ {t:"特有の経路と予防",src:PAR_SRC.sou_t+" p.25〜26",url:PAR_SRC.sou,sec:[
+  ["寄生虫に特有の感染経路",["(A) 経皮感染：寄生虫が自力で皮膚や粘膜を突き破って体内に侵入する（住血吸虫類）","(B) 自家感染：体内でつくられた卵・幼虫が、同じ宿主の中で再び成虫まで発育する"],"p.25"],
+  ["感染・伝播の要因",["自然環境：温暖化で媒介動物の分布が変わる（主に拡大）","人間活動：往来の活発化による持ち込み・寄生虫症の増加／食生活・性生活の多様化"],"p.26"],
+  ["予防",["個人的予防（寄生虫に特有の対策が多く、非常に重要）：手洗いの励行・生食しない・十分に加熱・蚊を回避・流行地域を回避・予防内服","地域社会での予防：集団治療・総合的有害生物管理（媒介動物などを地域で対策する）"],"p.26"]]},
+ {t:"感染症法と位置づけ",src:PAR_SRC.sou_t+" p.8・27",url:PAR_SRC.sou,sec:[
+  ["寄生虫症の過去と現在",["衛生状況の改善と集団駆虫の成功で、日本では ほんとうに まれな病気になった（一生でアニサキスくらいしか遭遇しない）","日和見感染症：免疫不全で感染が成立しやすい（トキソプラズマなど）","動物由来感染症：ハマダラカが媒介するマラリアなど、媒介動物を要するもの","新興・再興感染症：新興は少ないが、マラリアは人の往来の増加で再興感染症に","顧みられない熱帯病（NTDs）：熱帯の途上国で流行し、治療法の開発が進んでいない"],"p.8"],
+  ["感染症法と検疫（参考）",["4類（動物由来感染症）：マラリア・エキノコッカス症","5類（全数・定点）：アメーバ赤痢・クリプトスポリジウム症・ジアルジア症","検疫：空港・港湾で ヒト（マラリアなど）・食品（輸入生鮮食品監視）・動植物を検疫","実際には、寄生虫の検疫を効果的に行うことは難しい"],"p.27"]]}],
+2:[{t:"病害作用と臓器特異性",src:PAR_SRC.sou_t+" p.29〜30",url:PAR_SRC.sou,sec:[
+  ["寄生虫の病害作用（ほかの病原体と しくみが全然違う）",["(1) 物理的障害（最も多い）：虫体・虫卵が臓器や組織を壊したり詰まらせたりする","例：アニサキスが胃壁を壊す（痛い）／日本住血吸虫（血中に寄生）の虫卵が脳などの血管に詰まって塞栓症","(2) 生理活性物質による障害（多くない）：分解酵素や代謝産物。例：赤痢アメーバの蛋白分解酵素","(3) 抗原作用による障害：Ⅰ型アレルギー（IgE産生・好酸球増多）は多い","時に レフレル症候群（肺に好酸球が浸潤し、好酸球性肺炎のような症状・所見）＝まれ"],"p.29"],
+  ["臓器特異性",["寄生虫ごとに発育・生殖に適した臓器があり、そこに悪さをしやすい","腸管：回虫・横川吸虫・日本海裂頭条虫・蟯虫・赤痢アメーバ…（多数）","赤血球（＋肝臓）：マラリア原虫","肺：肺吸虫／肝：肝吸虫・エキノコッカス","脳：トキソプラズマ／膣：トリコモナス","2か所以上に特異性：トキソプラズマ（脳・眼・筋肉・肺）、回虫（小腸→肝→肺→咽頭→小腸と回る）","違う臓器に入りこむ＝迷入、流れ着く＝転移"],"p.30"]]},
+ {t:"臨床症状と検査",src:PAR_SRC.sou_t+" p.31〜32",url:PAR_SRC.sou,sec:[
+  ["臨床症状と問診",["臓器特異性に関連して、起こりやすい症状がある","重要な問診：食事内容（特に生食）・海外渡航歴や居住歴・ペット飼育歴"],"p.31"],
+  ["疑うきっかけ（ルーチン検査の異常）",["好酸球増多（ほぼ必ずオーダーする血算でわかる）","IgEの増加（よくわからない感染症のときにオーダーする）"],"p.32"],
+  ["確定診断（特異度の高い検査）",["形態検査：虫体・虫卵を検出。疑う寄生虫に応じた集卵法がある","遺伝子検査（PCR）：ゲノムDNAを検出。虫体・虫卵・血液・糞便などが使える","抗原検査：寄生虫抗原を検出。マラリアなど一部で利用","抗体検査：アニサキス・肺吸虫・肝吸虫などで利用"],"p.32"]]},
+ {t:"治療",src:PAR_SRC.sou_t+" p.33",url:PAR_SRC.sou,sec:[
+  ["寄生虫症の治療法",["内視鏡的摘出：アニサキスを つまみ取る","外科的切除：感染巣を切除する","治療薬：抗原虫薬と抗蠕虫薬（駆虫薬）"],"p.33"],
+  ["治療薬",["抗原虫薬：キニーネ・クロロキン・メフロキン／アルテミシニン／メトロニダゾール／スルファドキシン・ピリメタミン（SP）合剤","抗蠕虫薬（駆虫薬）：ピランテル・プラジカンテル／イベルメクチン／メベンダゾール・アルベンダゾール／ジエチルカルバマジン","★ ピランテルとプラジカンテルが非常に多くの蠕虫に効く点が非常に重要"],"p.33"]]}]};
+
+/* ---- 講義問題（講義の小テスト・Minimum Requirements から。記述で答えて自己採点） ---- */
+PAR.LQ={
+0:[{f:0,src:"総論 小テスト(2)",q:"最低限知っておいてほしい2〜4つの寄生虫を挙げてください。",a:["マラリア（原虫）","アニサキス（線虫）","余裕があれば：トキソプラズマ・赤痢アメーバ"]},
+ {f:0,src:"総論 小テスト(3)",q:"寄生虫と細菌・真菌の違いについて説明してください。",a:["寄生虫は「生活史」（栄養があれば分裂する以上の、複雑な発育過程）をもつ","細菌は原核生物（核膜なし）で細胞壁をもつ。真菌は真核生物で細胞壁をもつ","寄生虫は真核生物（核膜あり）で、細胞壁をもたない","治療薬もそれぞれ異なる（抗菌薬・抗真菌薬／抗原虫薬・抗蠕虫薬）"]},
+ {f:0,src:"総論 小テスト(4)",q:"寄生虫の2つの分類について説明してください。",a:["内部寄生虫（体内に寄生）と外部寄生虫（皮膚に寄生：ヒゼンダニ・シラミ・ノミ）","内部寄生虫は さらに 単細胞の原虫（マラリア・トキソプラズマ）と多細胞の蠕虫に分かれる"]},
+ {f:1,src:"総論 小テスト(5)",q:"蠕虫の3つの分類について説明してください。",a:["吸虫：葉っぱ・ヒルのような形で組織に吸い付く（横川吸虫・日本住血吸虫）","条虫：きしめん状（さなだむし）。消化管内・組織内を移動（日本海裂頭条虫）","線虫：ひも状。消化管内・組織内を移動（アニサキス）"]},
+ {f:0,src:"総論 小テスト(6)",q:"外部寄生虫の例を1つ挙げてください。",a:["ヒゼンダニ（疥癬の原因。皮膚に疥癬トンネルをつくる）","ほかに：シラミ・ノミ"]},
+ {f:2,src:"総論 小テスト(7)",q:"寄生虫の免疫回避機構について例を3つ説明してください。",a:["細胞内への侵入：トキソプラズマ","表面抗原の変異（攻撃を受けると抗原を変える）：トリパノソーマ","赤血球への侵入：マラリア（赤血球にはMHCが発現していない）"]},
+ {f:0,src:"総論 小テスト(1)・参考",q:"医動物学の単位取得における4つのポイントを挙げてください。",a:["講義に4コマ出席する（5コマ中、7割に必要）","演習（アクティブラーニング）に参加する（必須）","本試験を受ける（ウイルス学の試験と同時）","再試験の対象になったら、その前に個別相談に行く"]}],
+1:[{f:1,src:"総論 小テスト(8)",q:"寄生虫に特有と考えられる感染経路を2つ説明してください。",a:["経皮感染：寄生虫が自力で皮膚や粘膜を突き破って侵入する（住血吸虫類）","自家感染：体内でつくられた卵・幼虫が、同じ宿主の中で再び成虫まで発育する"]},
+ {f:1,src:"総論 小テスト(9)",q:"寄生虫感染に対する個人的予防について説明してください。",a:["手洗いを励行する","生食しない・十分に加熱する","蚊を回避する","流行地域を回避する","予防内服（マラリアなど）","寄生虫に特有の対策が多く、非常に重要"]}],
+2:[{f:0,src:"総論 小テスト(10)",q:"寄生虫が人体に害を及ぼす機構を説明してください。",a:["物理的障害（最も多い）：虫体・虫卵による破壊や閉塞（アニサキスの胃壁破壊、日本住血吸虫の虫卵塞栓）","生理活性物質による障害（多くない）：赤痢アメーバの蛋白分解酵素など","抗原作用による障害：Ⅰ型アレルギー（IgE・好酸球増多）、まれにレフレル症候群"]},
+ {f:0,src:"総論 小テスト(11)",q:"寄生虫の臓器特異性について主要なものを説明してください。",a:["腸管：回虫・横川吸虫・日本海裂頭条虫・蟯虫・赤痢アメーバ","赤血球（＋肝臓）：マラリア原虫","肺：肺吸虫／肝：肝吸虫・エキノコッカス","脳：トキソプラズマ／膣：トリコモナス","複数の臓器：トキソプラズマ（脳・眼・筋肉・肺）、回虫（小腸→肝→肺→咽頭→小腸）"]},
+ {f:1,src:"総論 小テスト(12)",q:"寄生虫病を疑う際の問診内容について説明してください。",a:["食事内容（特に生食）","海外渡航歴・居住歴","ペット飼育歴"]},
+ {f:1,src:"総論 小テスト(13)",q:"寄生虫病を疑う検査所見について説明してください。",a:["好酸球増多（血算）","IgEの増加","確定診断には：形態検査（虫体・虫卵）・遺伝子検査（PCR）・抗原検査（マラリアなど）・抗体検査（アニサキス・肺吸虫・肝吸虫など）"]},
+ {f:2,src:"総論 小テスト(14)",q:"寄生虫症の治療法について説明してください。",a:["内視鏡的摘出（アニサキス）","外科的切除（感染巣）","抗原虫薬：キニーネ・クロロキン・メフロキン・アルテミシニン・メトロニダゾール・SP合剤","抗蠕虫薬：ピランテル・プラジカンテル（非常に多くの蠕虫に効く）・イベルメクチン・メベンダゾール・アルベンダゾール・ジエチルカルバマジン"]}],
+3:[{f:0,src:"吸虫 Minimum Requirements",q:"吸虫類の総論として押さえるべき特徴（Minimum Requirements）を4つ挙げてください。",a:["住血吸虫以外は雌雄同体で、2個の吸盤（口吸盤・腹吸盤）をもつ","生活史の過程で幼生生殖する（ミラシジウム→スポロシスト→レジア→セルカリア→メタセルカリア）","感染源と感染型は多様（第2中間宿主が要る／要らない、感染型がメタセルカリア／セルカリア）","保虫宿主を多くもつ"]},
+ {f:1,src:"吸虫スライド",q:"横川吸虫の生活史（中間宿主と感染源）と、虫卵の特徴を説明してください。",a:["第1中間宿主：カワニナ → 第2中間宿主：アユ・ウグイ・フナ・シラウオなど（鱗・皮下・筋肉でメタセルカリア）","アユなどの生食で感染し、小腸で約1週間で成虫（1〜1.7mm）になる","日本の寄生虫感染は 1位アニサキス・2位横川吸虫・3位広節裂頭条虫","虫卵は小形・褐色で、肝吸虫卵と違い卵蓋の接続部が滑らかで網目模様がない"]},
+ {f:2,src:"吸虫 Minimum Requirements",q:"肥大吸虫と浅田棘口吸虫について、感染・症状・診断・治療を説明してください。",a:["肥大吸虫：体長約7cm。菱の実・レンコンなどの生食で感染（日本にはおらず東南アジア）","浅田棘口吸虫：約9mm。ドジョウ・カエルなどの生食で感染","症状：腹痛・下痢・好酸球増加","診断：糞便の虫卵検査／治療：プラジカンテル"]}],
+4:[{f:0,src:"吸虫 Minimum Requirements",q:"肝吸虫について、感染・症状・診断・治療を説明してください。",a:["フナなどコイ科淡水魚の生食で感染（第1中間宿主マメタニシ）","メタセルカリアは小腸で脱嚢し、総胆管から肝内胆管へ侵入。寿命は10年以上","症状：胆汁うっ滞・胆管肥厚・肝腫大・肝障害（胆管癌の併発も）","診断：糞便・胆汁から虫卵を検出／治療：プラジカンテル・トリクラベンダゾール"]},
+ {f:1,src:"吸虫 Minimum Requirements",q:"肝蛭について、感染・症状・診断・治療を説明してください。",a:["セリ・クレソン・菱の実などの生食で感染（第1中間宿主ヒメモノアラガイ）","小腸で脱嚢した幼虫が腸壁を穿通→腹腔→肝臓→胆管","症状：胆石様発作・肝障害・高度の好酸球増加","診断：糞便・胆汁の虫卵検査と抗体検査（虫卵が出ないことがあり免疫血清診断が有効）／治療：トリクラベンダゾール・プラジカンテル"]},
+ {f:2,src:"吸虫 Minimum Requirements",q:"肺吸虫症について、感染・症状・診断・治療を説明してください。",a:["モクズガニ・サワガニなどの生食（カニを食べたイノシシの刺身も）で感染","幼虫は腸壁を穿通→腹腔→腹壁→横隔膜→胸腔→肺に移行して成熟。脳に異所寄生することがある","症状：チョコレート色の血痰・肺結核様症状・胸水貯留（気胸も）。脳肺吸虫症では脳神経症状","診断：喀痰・糞便の虫卵検査、抗体検査、画像診断／治療：プラジカンテル"]}],
+5:[{f:0,src:"吸虫スライド",q:"一般の吸虫と住血吸虫の違いを説明してください。",a:["一般の吸虫：扁平・雌雄同体・中間宿主2つ・感染型はメタセルカリア・経口感染","住血吸虫：線虫様・雌雄異体・中間宿主1つ・感染型はセルカリア・経皮感染"]},
+ {f:1,src:"吸虫スライド",q:"日本住血吸虫の生活史と病態を説明してください。",a:["中間宿主ミヤイリガイから出たセルカリアが経皮侵入し、肝門脈系で成虫になる","血管内で産卵し、血栓・血管周囲炎・肉芽形成（虫卵結節）が生じる","虫卵塞栓と虫卵の代謝産物による組織反応で、肝硬変（肝脾住血吸虫症）や脳住血吸虫症","日本では1996年に終息宣言"]},
+ {f:2,src:"吸虫スライド",q:"マンソン住血吸虫とビルハルツ住血吸虫の違いと、住血吸虫症の診断法を説明してください。",a:["マンソン：アフリカ・ブラジルなど。ヒラマキガイ。腸間膜静脈系に寄生","ビルハルツ：アフリカ・中近東。膀胱壁静脈系に寄生し、血尿・排尿痛","診断：虫卵の検出、卵周囲沈降テスト（COPテスト）。肝エコーで魚鱗様紋理"]}],
+6:[{f:0,src:"条虫 Minimum Requirements",q:"条虫類の総論として押さえるべき特徴（Minimum Requirements）を説明してください。",a:["擬葉類と円葉類に大別される","頭節に数個〜数千個の片節が連なり、扁平で紐状（数mm〜10m）","雌雄同体で、各成熟片節に1対の雌雄生殖器（大複殖門条虫は2対）","消化管はなく、栄養は体表から吸収する","中間宿主は擬葉類が2つ、円葉類が1つ","ヒトに成虫が寄生する種と、幼虫が寄生する種がある"]}]};
 
 /*PAR-DATA-END*/
 const LOGO_DROP=`<svg viewBox="0 0 100 110" aria-hidden="true"><path d="M50 6C50 6 14 46 14 70a36 36 0 0 0 72 0C86 46 50 6 50 6z" fill="#FFD84A" stroke="#fff" stroke-width="5"/><rect x="33" y="46" width="9" height="12" fill="#000"/><rect x="58" y="46" width="9" height="12" fill="#000"/><rect x="40" y="68" width="20" height="6" fill="#000"/></svg>`;
@@ -2419,7 +2487,7 @@ function loadGame(k){GM=GAMES[k];({ST,MC,TX,MONS,SP,LEARN,MPMAX,FLOOR,BINX}=GM);
  BIN=ST.map((S,s)=>S.sp&&S.sp.type==="sort"?S.sp:BINX[s]);
  deriveAll();SAVEK=GM.battleKey;
  st={lv:1,exp:0,herb:3,spells:[],known:{},clear:{},perfect:{},miss:[],best:0,zukan:{},sound:true,talked:{},story:{},storyQ:{},cards:{}};
- const s=peek(GM.saveKey);if(s)st=Object.assign(st,s);st.talked=st.talked||{};st.fl=st.fl||{};st.story=st.story||{};st.storyQ=st.storyQ||{};st.cards=st.cards||{};st.spells=st.spells.filter(id=>SP[id]);["clear","perfect","talked"].forEach(f=>Object.keys(st[f]).forEach(s=>{if(+s>=ST.length)delete st[f][s]}));Object.keys(st.zukan).forEach(z=>{if(+z.split("-")[0]>=ST.length)delete st.zukan[z]});
+ const s=peek(GM.saveKey);if(s)st=Object.assign(st,s);st.talked=st.talked||{};st.fl=st.fl||{};st.story=st.story||{};st.storyQ=st.storyQ||{};st.cards=st.cards||{};st.srs=st.srs||{};st.note=st.note||{};st.lq=st.lq||{};srsInit();st.spells=st.spells.filter(id=>SP[id]);["clear","perfect","talked"].forEach(f=>Object.keys(st[f]).forEach(s=>{if(+s>=ST.length)delete st[f][s]}));Object.keys(st.zukan).forEach(z=>{if(+z.split("-")[0]>=ST.length)delete st.zukan[z]});
  if(!meta.mig[k]){const c=Object.keys(st.clear).length,p=Object.keys(st.perfect).length;meta.mig[k]=1;if(c||p){const v=c*300+p*200;meta.stones+=v;MIGMSG=`これまでの クリア ${c}・ノーミス ${p} の ほうびとして 💎${v} を うけとった！`}saveMeta()}
  try{localStorage.setItem("tatakau-series-last",k)}catch(e){}
  document.title=GM.title}
@@ -2511,7 +2579,7 @@ function qOf(k){const id=k.slice(2);
 
 const save=()=>{try{localStorage.setItem(GM.saveKey,JSON.stringify(st))}catch(e){}};
 const maxHP=()=>Math.round((40+st.lv*12)*(1+GB().hp)),ATK=()=>10+st.lv*4,need=()=>st.lv*30;
-const addMiss=k=>{if(!st.miss.includes(k))st.miss.push(k)},delMiss=k=>{st.miss=st.miss.filter(x=>x!==k)};
+const addMiss=k=>{if(!st.miss.includes(k))st.miss.push(k);srsBad(k)},delMiss=k=>{st.miss=st.miss.filter(x=>x!==k)};
 
 let ac=null;
 function beep(f,d,type,when){if(st&&!st.sound)return;try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();const o=ac.createOscillator(),g=ac.createGain(),t=ac.currentTime+(when||0);o.type=type||"square";o.frequency.value=f;g.gain.setValueAtTime(.07,t);g.gain.exponentialRampToValueAtTime(.001,t+d);o.connect(g);g.connect(ac.destination);o.start(t);o.stop(t+d)}catch(e){}}
@@ -5992,6 +6060,7 @@ function home(){G=null;SV=null;const cl=Object.keys(st.clear).length;setTimeout(
  show(`<div class="row"><button class="herb" data-act="title">◀ シリーズ</button></div><div class="logo">${GM.logo}<h1>${GM.title}</h1><p class="dim small">${GM.tagline}</p></div>
  ${(()=>{const o=loadBattle();if(!o)return "";const m=o.mons[o.mi];return `<button class="cmd pri" data-act="resume">つづきから<br><span class="small">${esc(o.title)}${o.mode==="dungeon"?`　${o.mi+1}/${o.mons.length}体目`:o.mode==="endless"?`　${o.kills}体 たおした`:""}　HP ${o.hp}${m?`　vs ${esc(m.name)}`:""}</span></button><div class="mt"></div>`})()}<div class="win stat"><span>しずく</span><span>Lv ${st.lv}　HP ${maxHP()}　こうげき ${ATK()}</span><span>つぎのLvまで</span><span>${need()-st.exp}</span><span>じゅもん</span><span>${st.spells.length} / ${SPO.length}　　やくそう 🌿×${st.herb}</span></div>
  ${MIGMSG?`<div class="win mt center y">${MIGMSG}</div>`:""}<div class="grid2 mt"><button class="cmd pri" data-act="gacha">🎰 ガチャ<br><span class="small">💎 ${meta.stones}</span></button><button class="cmd" data-act="gear">🛡 そうび<br><span class="small dim">${Object.values(meta.equip).filter(Boolean).map(id=>GID[id].e).join("")||"なし"}</span></button></div>
+ ${(()=>{const n=srsDue().length;return `<button class="cmd ${n?"pri":""} mt" data-act="today">📅 きょうの復習　${n?`<span class="y">${n}問</span>`:"なし"}<br><span class="small dim">まちがえた問題を 1・3・7・14・30日後に 出し直す</span></button>`})()}
  <div class="win mt"><p class="y">ダンジョンを えらぶ　<span class="dim small">クリア ${cl}/${ST.length}</span></p><div class="list mt">${ST.map((S,i)=>`<button class="cmd" data-act="town" data-v="${i}"><span style="float:right">${st.talked[i]?"💬":""}${st.perfect[i]?"🏅":""}${st.clear[i]?"👑":MONS[i][3][0]}</span>${i+1} ${S.n}${!st.clear[i]&&[0,1,2].some(f=>flDone(i,f))?`<span class="sub">フロア ${[0,1,2].filter(f=>flDone(i,f)).length+1}/4 まで すすんだ</span>`:""}${S.sub?`<span class="sub">${S.sub}</span>`:""}</button>`).join("")}</div></div>
  <div class="grid2 mt"><button class="cmd" data-act="endless">れんぞくバトル<br><span class="dim small">最高 ${st.best}体</span></button><button class="cmd" data-act="review">ふくしゅう洞窟<br><span class="dim small">${st.miss.length}問</span></button><button class="cmd" data-act="book">じゅもんの書</button><button class="cmd" data-act="zukan">まもの図鑑</button></div>
  <button class="cmd mt" data-act="sound">おと：${st.sound?"あり":"なし"}</button>
@@ -6009,9 +6078,10 @@ function town(s){G=null;s=+s;const S=ST[s],n=learn(s),here=LEARN[s]||[];
  <div class="win mt center"><p class="dim small">このダンジョンの まもの</p><p style="font-size:2rem;letter-spacing:10px">${MONS[s].map((m,i)=>st.zukan[s+"-"+i]?m[0]:"❔").join("")}</p>${here.length?"":`<p class="small dim">ここで おぼえる じゅもんは ない</p>`}</div>
  ${loadBattle()?`<p class="small dim mt">※ 中断中のバトルがあります。ここで はいると、そのデータは消えます。</p>`:""}`)}
 function floorsHtml(s){const SG=GM.STORY&&GM.STORY[s],S=ST[s];
- return `<div class="win mt"><p class="y">フロアを えらぶ</p><p class="small dim">「はいる」を押すと、まだ読んでいない フロアは 先に内容が流れる</p>${[0,1,2,3].map(f=>{const op=flOpen(s,f),dn=f===3?!!st.clear[s]:flDone(s,f),rd=SG&&f<3?st.story[stKey(s,f)]!==undefined:f===3?st.story[stKey(s,3)]!==undefined:f===0&&!SG?!!st.talked[s]:null;
+ return `<div class="win mt"><p class="y">フロアを えらぶ</p><p class="small dim">${GM.NOTE&&GM.NOTE[s]?"「はいる」を押すと、はじめての フロアは 講義ノート → 講義問題 → ものがたり → バトル の順に進む":"「はいる」を押すと、まだ読んでいない フロアは 先に内容が流れる"}</p>${[0,1,2,3].map(f=>{const op=flOpen(s,f),dn=f===3?!!st.clear[s]:flDone(s,f),rd=SG&&f<3?st.story[stKey(s,f)]!==undefined:f===3?st.story[stKey(s,3)]!==undefined:f===0&&!SG?!!st.talked[s]:null;
   const read=SG&&f<3?`data-act="sread" data-v="${s}-${f}"`:f===3?`data-act="f4read" data-v="${s}"`:f===0&&S.talk&&S.talk.length?`data-act="talk" data-v="${s}"`:"";
   return `<div class="flr mt"><p>${dn?"✅":op?"▶":"🔒"} フロア${f+1}：${chem(flName(s,f))}</p><p class="small dim">${f<3?`手下 ${FLOOR_N[f]}体`:`手下 ${FLOOR_N[3]}体＋ボス`}${rd===true?"　📜読んだ":""}${SG&&f<3&&st.storyQ[stKey(s,f)]?"　✅ 問題ノーミス":""}${op?"":"　（フロア"+f+"を クリアすると はいれる）"}</p>
+  ${f<3&&(noteOf(s,f)||lqKeys(s,f).length)?`<div class="grid2 mt">${noteOf(s,f)?`<button class="cmd" data-act="note" data-v="${s}-${f}">📖 ノート${st.note[stKey(s,f)]?"":"<span class=\"sub\">まだ読んでいない</span>"}</button>`:`<span></span>`}${lqKeys(s,f).length?`<button class="cmd" data-act="lqf" data-v="${s}-${f}">✍️ 講義問題 ${lqKeys(s,f).length}問<span class="sub">${lqKeys(s,f).filter(k=>st.lq[k]===2).length}問 ◎</span></button>`:`<span></span>`}</div>`:""}
   <div class="grid2 mt">${read?`<button class="cmd" ${read}>📜 読む</button>`:`<span></span>`}<button class="cmd ${op&&!dn?"pri":""}" data-act="efl" data-v="${s}-${f}" ${op?"":"disabled"}>⚔ はいる</button></div></div>`}).join("")}</div>`}
 function zukan(){show(`<div class="row">${back}<h2 class="y">まもの図鑑</h2></div>${GM.CARD?`<p class="y mt">🃏 機序カード</p>`+Object.keys(GM.CARD).map(s=>st.cards[s]?cardHtml(+s):`<div class="win mt dim small">？？？（${+s+1} ${ST[s].n}を クリアすると てにはいる）</div>`).join(""):""}
  ${ST.map((S,s)=>`<p class="mt small dim">${s+1} ${S.n}</p><div class="zk">${MONS[s].map((m,i)=>{const n=st.zukan[s+"-"+i];return `<div class="${n?"":"no"}"><span>${m[0]}</span>${n?m[1]+"<br>×"+n:"？？？"}</div>`}).join("")}</div>`).join("")}`)}
@@ -6042,6 +6112,8 @@ const flOf=(g,i)=>{const m=g.mons[i];return m?(m.fl!=null?m.fl:(m.boss?3:Math.mi
 const flKey=(s,f)=>s+"-"+f,flDone=(s,f)=>!!(st.fl&&st.fl[flKey(s,f)]),flOpen=(s,f)=>f===0||!!st.clear[s]||flDone(s,f-1);
 const flName=(s,f)=>{const A=GM.STORY&&GM.STORY[s]&&GM.STORY[s][f];return f===3?"総まとめ と ボス（"+(ST[s].boss||MONS[s][3][1])+"）":A?A.t:"手下の むれ"};
 function enterFloor(v){const [s,f]=String(v).split("-").map(Number);if(!flOpen(s,f))return;const go=()=>floorBattle(s,f),S=ST[s],SG=GM.STORY&&GM.STORY[s];
+ if(f<3&&noteOf(s,f)&&!st.note[stKey(s,f)])return noteShow(s,f,()=>enterFloor(v),lqKeys(s,f,true).length?"✍️ 講義問題へ":"📜 ものがたりへ");
+ if(f<3){const lk=lqKeys(s,f,true);if(lk.length)return lqRun(lk,()=>enterFloor(v),"講義問題")}
  if(f<3&&SG&&SG[f]&&st.story[stKey(s,f)]===undefined)return story(s,f,go,"たたかいへ");
  if(f===0&&!SG&&S.talk&&S.talk.length&&!st.talked[s]){G=null;TK={s,i:0,after:go};return talkShow()}
  if(f===3&&st.story[stKey(s,3)]===undefined)return floor4(s,go);
@@ -6160,7 +6232,7 @@ function answer(v,btn){const g=G;if(!g||g.lock||!g.q)return;g.lock=true;v=+v;con
  if(right){g.combo++;const B=GB(),cb=Math.min(g.combo-1,5),gm=1+Math.min(.5,B.atk+(sk?B.skill:0)+cb*B.combo+(fast?B.crit:0));
   const d=Math.max(1,Math.round(ATK()*(sk?2.5:1)*(fast?1.6:1)*(1+cb*.08)*gm*stsAtk()*rnd(.9,1.1)));
   const S=stsDef(),mg=Math.max(0,(sk?0:1)-(S&&S.fx==="mpdown"?1:0));g.mp=Math.min(mpMax(),g.mp+mg);const pg=sk?0:Math.min(PW_MAX-(g.pw||0),fast?PW_CRIT:PW_GAIN);g.pw=(g.pw||0)+pg;sHit(fast);
-  if(g.mode==="review")delMiss(q.k);
+  if(g.mode==="review")delMiss(q.k);if(g.srs)srsGood(q.k);
   L+=`<p>しずくの ${sk?"とくぎ！":"こうげき！"}${sk?"":`　<span class="mp">MP+${mg}</span>${pg?`　<span class="y">💪+${pg}</span>`:""}`}</p>${fast?'<p class="crit">かいしんの いちげき！</p>':""}`+hitMon(d);
   if(sk)L+=breakCharge();L+=stsStep()}
  else{g.combo=0;g.missN++;sNg();addMiss(q.k);if(!g.miss.some(x=>x.k===q.k))g.miss.push({k:q.k,t:q.q+"　→ "+q.ch[q.a],ex:q.ex(q.a)});const s=g[g.src];s.splice(Math.min(2,s.length),0,q.k);
@@ -6195,6 +6267,7 @@ function finish(win){const g=G;G=null;clearBattle();R=g;let head,body="",stones=
    if(GM.CARD&&GM.CARD[g.s]&&!st.cards[g.s]){st.cards[g.s]=1;extra+=`<p class="lv mt">🃏 機序カード「${chem(GM.CARD[g.s].t)}」を てにいれた！</p>`}}
   else head="ぜんめつ した…"}
  else if(g.mode==="endless"){const nb=g.kills>st.best;if(nb)st.best=g.kills;head=`${g.kills}体 たおした！`;body=nb?'<p class="y">さいこうきろく こうしん！</p>':`<p class="dim">さいこうきろく ${st.best}体</p>`;win=nb&&g.kills>0}
+ else if(g.srs){head=win?"きょうの復習 クリア！":"きょうの復習、とちゅうで やられた…";if(win)stones=50;body=`<p>きょう のこっている復習：${srsDue().length}問</p><p class="small dim">正解した問題は、つぎは もっと あとの日に 出てくる。</p>`}
  else{head=win?"わすれんぼうを たおした！":"わすれんぼうに やられた…";if(win)stones=50;body=`<p>洞窟に のこる問題：${st.miss.length}問</p>`}
  save();const got=addStones(stones);if(win)sWin();
  const nextBtn=win&&g.mode==="dungeon"&&g.fl!=null&&g.fl<3?`<button class="cmd pri mt" data-act="efl" data-v="${g.s}-${g.fl+1}">つぎへ：フロア${g.fl+2} ${chem(flName(g.s,g.fl+1))}</button>`:win&&g.mode==="dungeon"&&g.s<ST.length-1?`<button class="cmd pri mt" data-act="town" data-v="${g.s+1}">つぎのダンジョン：${ST[g.s+1].n}</button>`:"";
@@ -6203,7 +6276,42 @@ function finish(win){const g=G;G=null;clearBattle();R=g;let head,body="",stones=
  ${meta.stones>=100?`<button class="cmd mt" data-act="gacha">🎰 ガチャを ひく（💎${meta.stones}）</button>`:""}
  ${nextBtn}<button class="cmd mt ${nextBtn?"":"pri"}" data-act="retry">もういちど たたかう</button><button class="cmd mt" data-act="home">まちへ もどる</button>`)}
 
-const A={resume,home,town,talk,tnext:talkNext,tskip:talkSkip,title,pick,zukan,book,dungeon,endless,review,menu,spells,cast,ans:answer,next,herb:useHerb,atk:()=>ask("atk"),skill:()=>ask("skill"),
+
+/* ============ 勉強モード：講義ノート・講義問題・きょうの復習（間隔反復） ============ */
+const DAY=()=>Math.floor((Date.now()-new Date().getTimezoneOffset()*6e4)/864e5),SRS_INT=[1,3,7,14,30];
+function srsInit(){st.srs=st.srs||{};const d=DAY();(st.miss||[]).forEach(k=>{if(!st.srs[k])st.srs[k]={d,n:0}})}
+function srsBad(k){if(!st)return;st.srs=st.srs||{};st.srs[k]={d:DAY()+1,n:0}}
+function srsGood(k){const r=st.srs&&st.srs[k];if(!r||r.d>DAY())return;r.n++;if(r.n>=SRS_INT.length)delete st.srs[k];else r.d=DAY()+SRS_INT[r.n]}
+const lqOf=k=>{const[s,i]=k.slice(2).split("-").map(Number);const L=GM.LQ&&GM.LQ[s];return L&&L[i]?Object.assign({s,i},L[i]):null};
+const srsDue=()=>Object.keys(st.srs||{}).filter(k=>st.srs[k].d<=DAY()&&(k[0]==="l"?lqOf(k):qOf(k)));
+const noteOf=(s,f)=>{const N=GM.NOTE&&GM.NOTE[s];return N&&N[f]};
+const lqKeys=(s,f,onlyNew)=>{const L=GM.LQ&&GM.LQ[s];if(!L)return[];return L.map((x,i)=>x.f===f?"l:"+s+"-"+i:null).filter(k=>k&&(!onlyNew||st.lq[k]===undefined))};
+let NX=null,LS=null;
+function noteShow(s,f,after,go){s=+s;f=+f;const N=noteOf(s,f);if(!N)return after();st.note[stKey(s,f)]=1;save();NX=after;
+ show(`<div class="row"><button class="herb" data-act="town" data-v="${s}" aria-label="もどる">◀</button><h2 class="y">📖 講義ノート</h2></div>
+ <div class="win mt"><p class="y">${s+1}-${f+1}　${chem(N.t||flName(s,f))}</p><p class="small dim mt">出典：${esc(N.src)}${N.url?`　<a class="lnk" href="${N.url}" target="_blank" rel="noopener">講義資料をひらく ↗</a>`:""}</p></div>
+ ${N.sec.map(([h,L,ref])=>`<div class="win mt note"><p class="y">${chem(h)}${ref?`<span class="small dim">　${esc(ref)}</span>`:""}</p><ul class="pts">${L.map(x=>`<li>${chem(x)}</li>`).join("")}</ul></div>`).join("")}
+ <button class="cmd pri mt" data-act="nxgo">${go||"もどる"}</button>`)}
+function lqRun(ks,after,title){if(!ks.length)return after();LS={ks,i:0,open:false,after,title:title||"講義問題",res:[]};lqShow()}
+function lqShow(){const L=LS,k=L.ks[L.i],x=lqOf(k);if(!x){L.i++;return L.i<L.ks.length?lqShow():lqEnd()}
+ show(`<div class="row"><button class="herb" data-act="lqquit" aria-label="やめる">◀</button><h2 class="y">✍️ ${esc(L.title)}</h2></div>
+ <p class="small dim mt">${L.i+1} / ${L.ks.length}　${esc(ST[x.s].n)}${x.src?`　（${esc(x.src)}）`:""}</p>
+ <div class="win mt"><p>${chem(x.q)}</p></div>
+ ${L.open?`<div class="win mt"><p class="y">模範解答</p><ul class="pts">${x.a.map(t=>`<li>${chem(t)}</li>`).join("")}</ul>${L.memo?`<p class="small dim mt">あなたの答え：${esc(L.memo)}</p>`:""}</div>
+  <p class="small dim mt center">自分の答えと くらべて えらぶ</p><div class="grid3 mt"><button class="cmd" data-act="lqg" data-v="2">◎<br><span class="small">できた</span></button><button class="cmd" data-act="lqg" data-v="1">△<br><span class="small">あやしい</span></button><button class="cmd" data-act="lqg" data-v="0">×<br><span class="small">できなかった</span></button></div>`
+ :`<textarea id="lqm" class="memo mt" rows="4" placeholder="答えを書いてみる（書かずに頭で考えてもOK）"></textarea><button class="cmd pri mt" data-act="lqopen">答えを見る</button>`}`)}
+function lqOpen(){const m=document.getElementById("lqm");LS.memo=m?m.value.trim():"";LS.open=true;lqShow()}
+function lqGrade(v){v=+v;const k=LS.ks[LS.i];st.lq[k]=v;const r=st.srs[k];
+ if(v===2){if(r&&r.d<=DAY())srsGood(k);else if(!r)st.srs[k]={d:DAY()+SRS_INT[1],n:1}}else st.srs[k]={d:DAY()+1,n:0};
+ save();LS.res.push(v);LS.i++;LS.open=false;LS.memo="";LS.i<LS.ks.length?lqShow():lqEnd()}
+function lqEnd(){const L=LS,c=[0,1,2].map(v=>L.res.filter(x=>x===v).length);LS=null;
+ show(`<div class="win mt center"><p class="y">✍️ ${esc(L.title)} おわり</p><p class="mt">◎ ${c[2]}　△ ${c[1]}　× ${c[0]}</p><p class="small dim mt">△と×は あした「きょうの復習」に出てくる。◎も 3日後に もう一度 たしかめる。</p></div><button class="cmd pri mt" data-act="nxgo">つぎへ</button>`);NX=L.after}
+function today(){srsInit();const due=srsDue(),lk=due.filter(k=>k[0]==="l"),bk=shuffle(due.filter(k=>k[0]!=="l")).slice(0,20);
+ if(!due.length){const nx=Object.values(st.srs).map(r=>r.d).sort((a,b)=>a-b)[0];
+  return show(`<div class="row">${back}<h2 class="y">📅 きょうの復習</h2></div><div class="win mt center"><p style="font-size:3rem">🌤</p><p>きょうの復習は ぜんぶ おわった！</p><p class="small dim mt">${nx!=null?`つぎは ${nx-DAY()}日後に ${Object.values(st.srs).filter(r=>r.d===nx).length}問`:"まちがえた問題や、講義問題で △×にしたものが、ここに 日をあけて 出てくる。"}</p></div>`)}
+ const bt=()=>bk.length?startBattle({mode:"review",srs:true,title:"きょうの復習",pool:bk,bq:[],mons:[{s:null,e:"📅",name:"わすれかけの きおく",desc:"",weak:null,boss:true,hits:bk.length}]}):home();
+ lk.length?lqRun(lk,bt,"きょうの復習（記述）"):bt()}
+const A={resume,home,town,today,lqopen:lqOpen,lqg:lqGrade,lqquit(){const L=LS;LS=null;L&&L.after&&L.after===home?home():(G=null,home())},nxgo(){const f=NX;NX=null;f?f():home()},note(v){const[s,f]=v.split("-").map(Number);noteShow(s,f,()=>town(s),"もどる")},lqf(v){const[s,f]=v.split("-").map(Number);lqRun(lqKeys(s,f),()=>town(s),"講義問題")},talk,tnext:talkNext,tskip:talkSkip,title,pick,zukan,book,dungeon,endless,review,menu,spells,cast,ans:answer,next,herb:useHerb,atk:()=>ask("atk"),skill:()=>ask("skill"),
  gacha,pull,pullshow:pullShow,gear:gearScr,equip,unequip,enh,
  snext:storyNext,sskip:storySkip,sqa:sqAns,sqn:sqNext,sdone:sqDone,sre:sqRe,stories:storyList,
  sread(v){const [s,a]=v.split("-").map(Number);story(s,a,()=>town(s))},f4read(v){floor4(+v,()=>town(+v),"もどる")},f4go(){const f=F4;F4=null;if(f)f()},enter,efl:enterFloor,
