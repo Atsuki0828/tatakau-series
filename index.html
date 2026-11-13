@@ -2724,16 +2724,16 @@ function addStones(n){n=Math.round(n);if(n<=0)return 0;meta.coins+=n;saveMeta();
 const HPU=m=>Math.round(30*(1+Math.min(20,m&&m.s!=null?m.s:6)*.03));
 
 /* ---- 見た目：画像素材（assets/）があれば使い、なければ絵文字 ---- */
-const ASSET_BASE="assets/",AOK={};
-function aProbe(p){if(p in AOK)return;AOK[p]=0;const i=new Image();i.onload=()=>{AOK[p]=1;document.querySelectorAll(`[data-asset="${p}"]`).forEach(el=>{el.innerHTML=`<img src="${ASSET_BASE+p}" alt="">`;el.classList.add("hasimg")})};i.onerror=()=>{AOK[p]=-1};i.src=ASSET_BASE+p}
-function aBox(p,fb,cls){aProbe(p);return AOK[p]===1?`<span class="${cls} hasimg" data-asset="${p}"><img src="${ASSET_BASE+p}" alt=""></span>`:`<span class="${cls}" data-asset="${p}">${fb}</span>`}
+const ASSET_BASE="assets/",AOK={},AU=p=>ASSET_BASE+p.replace(/\.png$/,".webp");
+function aProbe(p){if(p in AOK)return;AOK[p]=0;const i=new Image();i.onload=()=>{AOK[p]=1;document.querySelectorAll(`[data-asset="${p}"]`).forEach(el=>{el.innerHTML=`<img src="${AU(p)}" alt="">`;el.classList.add("hasimg")});document.querySelectorAll(`[data-bg="${p}"]`).forEach(el=>el.style.backgroundImage=`url(${AU(p)})`)};i.onerror=()=>{AOK[p]=-1};i.src=AU(p)}
+function aBox(p,fb,cls){aProbe(p);return AOK[p]===1?`<span class="${cls} hasimg" data-asset="${p}"><img src="${AU(p)}" alt=""></span>`:`<span class="${cls}" data-asset="${p}">${fb}</span>`}
 function playerHtml(id){const c=SID[meta.wear.c]||SID.c0,a=SID[meta.wear.a]||SID.a0;["idle","attack","cast"].forEach(p=>aProbe(`player/${c.id}/${p}.png`));
  const fb=`<span class="plemo">💧</span>${c.id!=="c0"?`<span class="pcos">${c.e}</span>`:""}`;
  return `<div class="plw acc-${a.id}" id="${id||"plw"}">${a.id!=="a0"?aBox(`pet/${a.id}.png`,a.e,"pet"):""}<div class="pl" id="${id?id+"-pl":"pl"}">${aBox(`player/${c.id}/idle.png`,fb,"plin")}</div></div>`}
-function plPose(pose){const p=document.getElementById("pl"),img=p&&p.querySelector("img"),path=`player/${meta.wear.c}/${pose}.png`;if(img&&AOK[path]===1)img.src=ASSET_BASE+path}
+function plPose(pose){const p=document.getElementById("pl"),img=p&&p.querySelector("img"),path=`player/${meta.wear.c}/${pose}.png`;if(img&&AOK[path]===1)img.src=AU(path)}
 function plAnim(c){const p=document.getElementById("pl");if(!p)return;p.classList.remove("atk","cast","hurt");void p.offsetWidth;p.classList.add(c);plPose(c==="atk"?"attack":c==="cast"?"cast":"idle");setTimeout(()=>{p.classList.remove(c);plPose("idle")},600)}
 function fx(kind,at,col,img){const f=document.getElementById("field");if(!f)return;const el=document.createElement("div");el.className="fx "+kind+" at-"+at;el.style.setProperty("--c",col||"#fff");
- if(img){aProbe(img);if(AOK[img]===1){el.className="fx img at-"+at;el.innerHTML=`<img src="${ASSET_BASE+img}" alt="">`}}
+ if(img){aProbe(img);if(AOK[img]===1){el.className="fx img at-"+at;el.innerHTML=`<img src="${AU(img)}" alt="">`}}
  f.appendChild(el);setTimeout(()=>el.remove(),900)}
 function swing(){const W=weapon();plAnim("atk");setTimeout(()=>fx(W.fx,"mon",W.col,`fx/${W.id}.png`),130);setTimeout(()=>fx("burst","mon",W.col,"fx/hit.png"),230)}
 function spellFx(col){plAnim("cast");fx("orb","pl",col||"#FFD84A");setTimeout(()=>fx("burst","mon",col||"#FFD84A","fx/spell.png"),430)}
@@ -6228,7 +6228,7 @@ function frame(c){const g=G,m=g.mon,mx=maxHP(),S=stsDef();if(!m.intent)m.intent=
  <div class="win hud mt"><span>Lv${st.lv}</span><div class="bar ${hpCls(g.hp,mx)}" id="hpb"><i style="width:${g.hp/mx*100}%"></i></div><span id="hpt">${g.hp}/${mx}</span><span class="mp" id="mpt">MP ${g.mp}</span></div><div class="scr" id="scr">SCORE ${fmt(g.score||0)}</div>
  <div class="tags" id="tags">${tagsHtml()}</div>
  <div class="field bt" id="field" style="--floor:${FLOOR[(m.s==null?7:m.s)%FLOOR.length]}">${bgHtml()}<div class="mname"><span>${m.name}</span><div class="bar ${hpCls(m.hp,m.max)}" id="mb"><i style="width:${m.hp/m.max*100}%"></i></div><span class="cd ${m.cd<=1?"warn":""}" id="cd" title="攻撃までのターンと、つぎの行動">⏳${m.cd} ${intentTxt(m)[0]}</span></div><div class="mshadow ${m.boss?"boss":""}"></div><div class="spr ${m.boss?"boss":""}${m.intent==="big"?" charge":""}" id="spr">${m.s!=null&&m.i!=null?aBox(`mon/${GM.key}/${m.s}-${m.i}.png`,m.e,"sprin"):m.e}</div>${playerHtml()}</div>${c}`)}
-function bgHtml(){const p=`bg/${GM.key}.png`;aProbe(p);return AOK[p]===1?`<div class="bgimg" style="background-image:url(${ASSET_BASE+p})"></div>`:""}
+function bgHtml(){const p=`bg/${GM.key}.png`;aProbe(p);return `<div class="bgimg" data-bg="${p}"${AOK[p]===1?` style="background-image:url(${AU(p)})"`:""}></div>`}
 function tagsHtml(){const g=G,S=stsDef();return `${S?`<span class="stsb">${S.ic} ${S.n}：${S.fxt}</span>`:""}${g.shield>0?`<span class="shb">🛡×${g.shield}</span>`:""}`}
 function updHud(){if(!G||!G.mon)return;const g=G,mx=maxHP(),m=g.mon,b=document.getElementById("hpb");if(!b)return;b.className="bar "+hpCls(g.hp,mx);b.firstChild.style.width=g.hp/mx*100+"%";document.getElementById("hpt").textContent=g.hp+"/"+mx;document.getElementById("mpt").textContent="MP "+g.mp;
  const mb=document.getElementById("mb");mb.className="bar "+hpCls(m.hp,m.max);mb.firstChild.style.width=m.hp/m.max*100+"%";const cd=document.getElementById("cd");cd.textContent=`⏳${Math.max(0,m.cd)} ${m.hp>0?intentTxt(m)[0]:""}`;cd.className="cd"+(m.cd<=1&&m.hp>0?" warn":"");
